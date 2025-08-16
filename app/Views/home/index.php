@@ -10,16 +10,16 @@
     <p class="text-xl text-gray-700 max-w-3xl mx-auto animate-fade-in-up">
         Transformamos tus ideas en soluciones digitales robustas y escalables. Expertos en desarrollo de software, consultoría y soluciones a medida.
     </p>
-    <div class="mt-8 flex justify-center space-x-4">
+<!-- <div class="mt-8 flex justify-center space-x-4"> -->
         <!-- Botón para registrarse (condicional si no está logueado, aunque aquí siempre se muestra) -->
-        <a href="<?= BASE_URL ?>register" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105">
-            ¡Regístrate ahora!
-        </a>
+        <!-- <a href="<?= BASE_URL ?>register" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105"> -->
+            <!-- ¡Regístrate ahora! -->
+        <!-- </a> -->
         <!-- Botón para ir a la sección de servicios en la misma página -->
-        <a href="#services" class="bg-gray-200 hover:bg-gray-300 text-blue-800 font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105">
-            Nuestros Servicios
-        </a>
-    </div>
+        <!-- <a href="#services" class="bg-gray-200 hover:bg-gray-300 text-blue-800 font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105"> -->
+            <!-- Nuestros Servicios -->
+        <!-- </a> -->
+    <!-- </div> -->
 </section>
 
 <!-- Separador visual -->

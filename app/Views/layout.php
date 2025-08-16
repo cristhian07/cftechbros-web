@@ -41,7 +41,7 @@
                         <li><a href="<?= BASE_URL ?>logout" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md transition duration-300">Cerrar Sesión</a></li>
                     <?php else: // Si el usuario no está logueado ?>
                         <li><a href="<?= BASE_URL ?>login" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-md transition duration-300">Iniciar Sesión</a></li>
-                        <li><a href="<?= BASE_URL ?>register" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition duration-300">Registrarse</a></li>
+                        <!-- <li><a href="<?= BASE_URL ?>register" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition duration-300">Registrarse</a></li> -->
                     <?php endif; ?>
                 </ul>
             </nav>

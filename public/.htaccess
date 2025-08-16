@@ -1,0 +1,14 @@
+<IfModule mod_rewrite.c>
+    # Activa el motor de reescritura de URLs
+    RewriteEngine On
+
+    # Si la solicitud es para un archivo existente, no la reescribas
+    RewriteCond %{REQUEST_FILENAME} !-f
+    # Si la solicitud es para un directorio existente, no la reescribas
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # Reescribe todas las demás solicitudes a index.php
+    # [QSA] Conserva la cadena de consulta (query string)
+    # [L] Detiene el procesamiento de reglas de reescritura posteriores
+    RewriteRule ^(.*)$ index.php [QSA,L]
+</IfModule>

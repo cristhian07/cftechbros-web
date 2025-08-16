@@ -6,11 +6,14 @@
  */
 
 // Define el directorio raíz de la aplicación
+// ROOT_PATH debe apuntar a la carpeta 'cftechbros-website/'
 define('ROOT_PATH', __DIR__ . '/../');
 
-// Define la ruta base para las URLs (ajusta si es necesario para subdirectorios)
-// Si tu aplicación está en http://localhost/cftechbros/, pon '/cftechbros/'
-define('BASE_URL', '/'); // Para cuando public/ es la raíz del servidor
+// Define la ruta base para las URLs. ¡Importante configurar esto correctamente!
+// Según la imagen, tu URL es 'localhost/cftechbros-web/public/index.php'.
+// Esto sugiere que la BASE_URL debe ser solo el subdirectorio de tu aplicación antes de public/
+// Si accedes como `http://localhost/cftechbros-web/public/index.php`, entonces la base es `/cftechbros-web/`
+define('BASE_URL', '/cftechbros-web/'); 
 
 // Habilitar la visualización de errores (solo para desarrollo, deshabilitar en producción)
 ini_set('display_errors', 1);

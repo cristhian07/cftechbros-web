@@ -17,6 +17,8 @@ class Router
      */
     public function add($method, $uri, $controller)
     {
+        // Normaliza la URI: asegura que la URI raíz sea '/' y que otras no tengan barra final
+        $uri = ($uri === '/') ? '/' : rtrim($uri, '/');
         $this->routes[] = [
             'uri' => $uri,
             'controller' => $controller,
@@ -55,14 +57,22 @@ class Router
         // Obtiene el método HTTP de la solicitud (GET, POST)
         $method = $_SERVER['REQUEST_METHOD'];
 
-        // Si la aplicación no está en la raíz del servidor web (ej. http://localhost/cftechbros/)
-        // se remueve el BASE_URL para que la comparación de rutas sea correcta.
-        if (BASE_URL !== '/') {
-            $uri = str_replace(BASE_URL, '/', $uri);
+        // Remueve el BASE_URL del inicio de la URI para obtener la ruta "limpia"
+        // Asegúrate de que BASE_URL termine con una barra si representa un directorio
+        if (strpos($uri, BASE_URL) === 0) {
+            $uri = substr($uri, strlen(BASE_URL));
         }
+
+        // Normaliza la URI recibida: asegura que la URI raíz sea '/' y que otras no tengan barra final
+        $uri = ($uri === '') ? '/' : '/' . ltrim($uri, '/');
+        $uri = ($uri === '/') ? '/' : rtrim($uri, '/');
+
+        // echo "Depuración: URI procesada por Router: " . $uri . "<br>"; // Línea de depuración
 
         // Itera sobre las rutas definidas para encontrar una coincidencia
         foreach ($this->routes as $route) {
+            // echo "Depuración: Comparando " . $uri . " con " . $route['uri'] . " (Método: " . $method . " vs " . $route['method'] . ")<br>"; // Línea de depuración
+
             // Compara la URI y el método HTTP de la solicitud con la ruta definida
             if ($route['uri'] === $uri && $route['method'] === $method) {
                 // Divide la cadena del controlador (ej. 'HomeController@index' -> ['HomeController', 'index'])

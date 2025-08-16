@@ -46,10 +46,19 @@ class AuthController extends BaseController
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Saneamiento de entradas para prevenir XSS
-            $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
-            $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
-            $csrfToken = filter_input(INPUT_POST, 'csrf_token', FILTER_SANITIZE_STRING);
+            // Saneamiento de entradas. FILTER_SANITIZE_STRING está obsoleto.
+            // Obtenemos el valor directamente. La protección contra inyección SQL
+            // se maneja con prepared statements en el modelo.
+            // Para prevención de XSS en la vista, se usaría htmlspecialchars() al mostrar.
+            $username = filter_input(INPUT_POST, 'username'); // Obtener el valor como string
+            $password = filter_input(INPUT_POST, 'password'); // Obtener el valor como string
+            $csrfToken = filter_input(INPUT_POST, 'csrf_token'); // Obtener el valor como string
+
+            // Validar que los inputs no sean nulos (es decir, que hayan sido enviados en el POST)
+            if ($username === null || $password === null || $csrfToken === null) {
+                $this->view('auth/login', ['error' => 'Error en el envío del formulario. Por favor, inténtalo de nuevo.', 'csrf_token' => Session::generateCsrfToken()]);
+                return;
+            }
 
             // Protección CSRF
             if (!Session::verifyCsrfToken($csrfToken)) {
@@ -57,31 +66,25 @@ class AuthController extends BaseController
                 return;
             }
 
-            // Validación básica de campos
             if (empty($username) || empty($password)) {
                 $this->view('auth/login', ['error' => 'Por favor, introduce usuario y contraseña.', 'csrf_token' => Session::generateCsrfToken()]);
                 return;
             }
 
-            // Busca el usuario en la base de datos por nombre de usuario
             $user = $this->userModel->findByUsername($username);
 
-            // Verifica si el usuario existe y si la contraseña es correcta
             if ($user && password_verify($password, $user['password'])) {
-                // Inicio de sesión exitoso: guarda el ID y nombre de usuario en la sesión
+                // Inicio de sesión exitoso
                 Session::set('user_id', $user['id']);
                 Session::set('username', $user['username']);
-                Session::delete('csrf_token'); // Eliminar el token CSRF después de un uso exitoso (seguridad)
+                Session::delete('csrf_token'); // Eliminar el token CSRF después de un uso exitoso
 
-                // Redirige al dashboard del usuario
                 $this->redirect('dashboard');
             } else {
-                // Credenciales incorrectas
                 $this->view('auth/login', ['error' => 'Credenciales incorrectas.', 'csrf_token' => Session::generateCsrfToken()]);
             }
         } else {
-            // Si la solicitud no es POST, redirige al formulario de login
-            $this->redirect('login');
+            $this->redirect('login'); // Redirige a la página de login si no es POST
         }
     }
 
@@ -94,7 +97,6 @@ class AuthController extends BaseController
         if (Session::has('user_id')) {
             $this->redirect('dashboard');
         }
-        // Pasa un token CSRF a la vista del formulario
         $this->view('auth/register', ['csrf_token' => Session::generateCsrfToken()]);
     }
 
@@ -109,12 +111,19 @@ class AuthController extends BaseController
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Saneamiento de entradas
-            $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
-            $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
-            $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
-            $confirmPassword = filter_input(INPUT_POST, 'confirm_password', FILTER_SANITIZE_STRING);
-            $csrfToken = filter_input(INPUT_POST, 'csrf_token', FILTER_SANITIZE_STRING);
+            // Saneamiento de entradas. FILTER_SANITIZE_STRING está obsoleto.
+            // Para el email, usamos FILTER_VALIDATE_EMAIL para validar, y htmlspecialchars() para mostrar.
+            $username = filter_input(INPUT_POST, 'username');
+            $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL); // Mantenemos la validación de email
+            $password = filter_input(INPUT_POST, 'password');
+            $confirmPassword = filter_input(INPUT_POST, 'confirm_password');
+            $csrfToken = filter_input(INPUT_POST, 'csrf_token');
+
+            // Validar que los inputs no sean nulos (es decir, que hayan sido enviados en el POST)
+            if ($username === null || $email === null || $password === null || $confirmPassword === null || $csrfToken === null) {
+                 $this->view('auth/register', ['error' => 'Error en el envío del formulario. Por favor, inténtalo de nuevo.', 'csrf_token' => Session::generateCsrfToken()]);
+                return;
+            }
 
             // Protección CSRF
             if (!Session::verifyCsrfToken($csrfToken)) {
@@ -122,14 +131,14 @@ class AuthController extends BaseController
                 return;
             }
 
-            $errors = []; // Array para almacenar mensajes de error
+            $errors = [];
 
             // Validaciones
-            if (empty($username) || empty($email) || empty($password) || empty($confirmPassword)) {
+            if (empty($username) || empty($password) || empty($confirmPassword)) { // Email se valida por FILTER_VALIDATE_EMAIL
                 $errors[] = 'Todos los campos son obligatorios.';
             }
 
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            if (!$email) { // Si FILTER_VALIDATE_EMAIL devuelve false
                 $errors[] = 'El formato del correo electrónico es inválido.';
             }
 
@@ -141,7 +150,6 @@ class AuthController extends BaseController
                 $errors[] = 'La contraseña debe tener al menos 6 caracteres.';
             }
 
-            // Verificar si el nombre de usuario o email ya existen
             if ($this->userModel->findByUsername($username)) {
                 $errors[] = 'El nombre de usuario ya está en uso.';
             }
@@ -150,37 +158,32 @@ class AuthController extends BaseController
                 $errors[] = 'El correo electrónico ya está registrado.';
             }
 
-            // Si hay errores, mostrar el formulario de registro con los mensajes de error
             if (!empty($errors)) {
-                // Se vuelven a pasar los datos POST para que el usuario no tenga que rellenar todo de nuevo
-                $this->view('auth/register', ['errors' => $errors, 'csrf_token' => Session::generateCsrfToken()]);
+                $this->view('auth/register', [
+                    'errors' => $errors,
+                    'csrf_token' => Session::generateCsrfToken(),
+                    // Mantener los valores para que el usuario no tenga que re-escribir
+                    'username_val' => htmlspecialchars($username),
+                    'email_val' => htmlspecialchars($email),
+                ]);
                 return;
             }
 
-            // Hashear la contraseña antes de almacenarla
             $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
-            // Intenta crear el usuario
             if ($this->userModel->create($username, $email, $hashedPassword)) {
-                // Registro exitoso: redirige al formulario de login con un mensaje de éxito
                 $this->view('auth/login', ['success' => 'Registro exitoso. ¡Ahora puedes iniciar sesión!', 'csrf_token' => Session::generateCsrfToken()]);
             } else {
-                // Error al registrar
                 $this->view('auth/register', ['error' => 'Error al registrar el usuario. Por favor, inténtalo de nuevo.', 'csrf_token' => Session::generateCsrfToken()]);
             }
         } else {
-            // Si la solicitud no es POST, redirige al formulario de registro
             $this->redirect('register');
         }
     }
 
-    /**
-     * Cierra la sesión del usuario.
-     * Elimina todos los datos de sesión y redirige a la página de inicio.
-     */
     public function logout()
     {
-        Session::destroy(); // Destruye la sesión
-        $this->redirect(''); // Redirige a la raíz de la aplicación
+        Session::destroy();
+        $this->redirect(''); // Redirige a la página de inicio
     }
 }

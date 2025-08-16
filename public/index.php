@@ -10,10 +10,8 @@
 define('ROOT_PATH', __DIR__ . '/../');
 
 // Define la ruta base para las URLs. ¡Importante configurar esto correctamente!
-// Según la imagen, tu URL es 'localhost/cftechbros-web/public/index.php'.
-// Esto sugiere que la BASE_URL debe ser solo el subdirectorio de tu aplicación antes de public/
-// Si accedes como `http://localhost/cftechbros-web/public/index.php`, entonces la base es `/cftechbros-web/`
-define('BASE_URL', '/cftechbros-web/'); 
+// Si accedes como `http://localhost/cftechbros-web/public/`, entonces la base es `/cftechbros-web/public/`
+define('BASE_URL', '/cftechbros-web/public/'); 
 
 // Habilitar la visualización de errores (solo para desarrollo, deshabilitar en producción)
 ini_set('display_errors', 1);
@@ -23,10 +21,21 @@ error_reporting(E_ALL);
 // Autocargador de clases
 // Este cargador automático busca las clases en la estructura de carpetas `app/`
 spl_autoload_register(function ($class) {
-    // Convierte el namespace a ruta de archivo (ej. App\Core\Router -> app/Core/Router.php)
-    $file = ROOT_PATH . str_replace('\\', '/', $class) . '.php';
+    // Convierte el namespace a ruta de archivo.
+    // Asegura que 'App\' del namespace se mapee a 'app/' en la ruta del archivo.
+    // Esto es vital para sistemas de archivos sensibles a mayúsculas/minúsculas.
+    $file = ROOT_PATH . str_replace('App\\', 'app/', $class) . '.php';
+    // Además, convierte cualquier otra barra invertida a barra normal
+    $file = str_replace('\\', '/', $file); 
+
+    // Línea de depuración para ver qué ruta está intentando cargar el autocargador
+    // echo "DEBUG Autoloader: Intentando cargar: " . $file . "<br>";
+
     if (file_exists($file)) {
         require_once $file;
+    } else {
+        // Opcional: Para depuración, puedes ver qué clase no se encontró y la ruta esperada
+        // echo "DEBUG Autoloader: Clase no encontrada: " . $class . " en ruta esperada: " . $file . "<br>";
     }
 });
 

@@ -6,7 +6,8 @@
  */
 ?>
 <div class="text-center bg-white p-8 rounded-lg shadow-xl border border-blue-200">
-    <h2 class="text-4xl font-bold text-blue-700 mb-6">Bienvenido/a, <span class="text-blue-800"><?= htmlspecialchars($username) ?></span>!</h2>
+    <!-- Asegúrate de que $username no sea null antes de pasarlo a htmlspecialchars -->
+    <h2 class="text-4xl font-bold text-blue-700 mb-6">Bienvenido/a, <span class="text-blue-800"><?= htmlspecialchars($username ?? 'Usuario') ?></span>!</h2>
     <p class="text-lg text-gray-700 mb-8">¡Gracias por ser parte de la comunidad de CFTechBros!</p>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">

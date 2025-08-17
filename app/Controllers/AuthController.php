@@ -46,15 +46,10 @@ class AuthController extends BaseController
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Saneamiento de entradas. FILTER_SANITIZE_STRING está obsoleto.
-            // Obtenemos el valor directamente. La protección contra inyección SQL
-            // se maneja con prepared statements en el modelo.
-            // Para prevención de XSS en la vista, se usaría htmlspecialchars() al mostrar.
-            $username = filter_input(INPUT_POST, 'username'); // Obtener el valor como string
-            $password = filter_input(INPUT_POST, 'password'); // Obtener el valor como string
-            $csrfToken = filter_input(INPUT_POST, 'csrf_token'); // Obtener el valor como string
+            $username = filter_input(INPUT_POST, 'username');
+            $password = filter_input(INPUT_POST, 'password');
+            $csrfToken = filter_input(INPUT_POST, 'csrf_token');
 
-            // Validar que los inputs no sean nulos (es decir, que hayan sido enviados en el POST)
             if ($username === null || $password === null || $csrfToken === null) {
                 $this->view('auth/login', ['error' => 'Error en el envío del formulario. Por favor, inténtalo de nuevo.', 'csrf_token' => Session::generateCsrfToken()]);
                 return;
@@ -76,7 +71,8 @@ class AuthController extends BaseController
             if ($user && password_verify($password, $user['password'])) {
                 // Inicio de sesión exitoso
                 Session::set('user_id', $user['id']);
-                Session::set('username', $user['username']);
+                Session::set('username', $user['username']); // <--- ASEGÚRATE DE QUE ESTA LÍNEA ESTÉ AQUÍ
+                Session::set('user_role', $user['role']); // Esta ya la agregamos para la validación de admin
                 Session::delete('csrf_token'); // Eliminar el token CSRF después de un uso exitoso
 
                 $this->redirect('dashboard');
@@ -111,15 +107,12 @@ class AuthController extends BaseController
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Saneamiento de entradas. FILTER_SANITIZE_STRING está obsoleto.
-            // Para el email, usamos FILTER_VALIDATE_EMAIL para validar, y htmlspecialchars() para mostrar.
             $username = filter_input(INPUT_POST, 'username');
-            $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL); // Mantenemos la validación de email
+            $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
             $password = filter_input(INPUT_POST, 'password');
             $confirmPassword = filter_input(INPUT_POST, 'confirm_password');
             $csrfToken = filter_input(INPUT_POST, 'csrf_token');
 
-            // Validar que los inputs no sean nulos (es decir, que hayan sido enviados en el POST)
             if ($username === null || $email === null || $password === null || $confirmPassword === null || $csrfToken === null) {
                  $this->view('auth/register', ['error' => 'Error en el envío del formulario. Por favor, inténtalo de nuevo.', 'csrf_token' => Session::generateCsrfToken()]);
                 return;
@@ -134,11 +127,11 @@ class AuthController extends BaseController
             $errors = [];
 
             // Validaciones
-            if (empty($username) || empty($password) || empty($confirmPassword)) { // Email se valida por FILTER_VALIDATE_EMAIL
+            if (empty($username) || empty($password) || empty($confirmPassword)) {
                 $errors[] = 'Todos los campos son obligatorios.';
             }
 
-            if (!$email) { // Si FILTER_VALIDATE_EMAIL devuelve false
+            if (!$email) {
                 $errors[] = 'El formato del correo electrónico es inválido.';
             }
 
@@ -162,7 +155,6 @@ class AuthController extends BaseController
                 $this->view('auth/register', [
                     'errors' => $errors,
                     'csrf_token' => Session::generateCsrfToken(),
-                    // Mantener los valores para que el usuario no tenga que re-escribir
                     'username_val' => htmlspecialchars($username),
                     'email_val' => htmlspecialchars($email),
                 ]);

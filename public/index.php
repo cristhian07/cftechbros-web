@@ -63,9 +63,20 @@ $router->post('/login', 'AuthController@login');        // Procesa el inicio de 
 $router->get('/register', 'AuthController@showRegisterForm'); // Muestra el formulario de registro
 $router->post('/register', 'AuthController@register');    // Procesa el registro de nuevos usuarios
 
+// Rutas del Formulario de Contacto
+$router->get('/contact', 'ContactController@showContactForm');
+$router->post('/contact', 'ContactController@submitContactForm');
+
 // Rutas de Usuario Autenticado (requieren que el usuario haya iniciado sesión)
 $router->get('/dashboard', 'DashboardController@index'); // Muestra el dashboard del usuario
 $router->get('/logout', 'AuthController@logout');       // Procesa el cierre de sesión
+
+$router->get('/admin/contacts', 'AdminController@showContacts'); // Muestra los mensajes de contacto
+
+
+// Rutas de administración
+$router->get('/admin/contacts', 'AdminController@showContacts');
+$router->post('/admin/contacts/update-status', 'AdminController@updateStatus');
 
 // Dispatch de la solicitud
 // Este método analiza la URL actual y el método de la solicitud (GET, POST, etc.)

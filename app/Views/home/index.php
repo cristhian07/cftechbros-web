@@ -80,10 +80,24 @@
 </section>
 
 <!-- Sección de llamada a la acción -->
+<!-- <section class="text-center py-10 bg-blue-50 rounded-lg shadow-inner"> -->
+    <!-- <h2 class="text-3xl font-bold text-blue-700 mb-4">¿Listo para Impulsar tu Negocio?</h2> -->
+    <!-- <p class="text-lg text-gray-700 mb-6">Contáctanos hoy mismo para discutir tus proyectos y necesidades tecnológicas.</p> -->
+    <!-- <a href="#" class="bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition duration-300 transform hover:scale-105"> -->
+        <!-- Contáctanos -->
+    <!-- </a> -->
+<!-- </section> -->
+
+
 <section class="text-center py-10 bg-blue-50 rounded-lg shadow-inner">
     <h2 class="text-3xl font-bold text-blue-700 mb-4">¿Listo para Impulsar tu Negocio?</h2>
     <p class="text-lg text-gray-700 mb-6">Contáctanos hoy mismo para discutir tus proyectos y necesidades tecnológicas.</p>
-    <a href="#" class="bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition duration-300 transform hover:scale-105">
-        Contáctanos
-    </a>
+    <div class="flex justify-center space-x-4">
+        <a href="<?= BASE_URL ?>contact" class="bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition duration-300 transform hover:scale-105">
+            Contáctanos
+        </a>
+ <a href="https://wa.me/+51923497380?text=Hola,%20quisiera%20m%C3%A1s%20informaci%C3%B3n%20sobre%20sus%20servicios." target="_blank" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition duration-300 transform hover:scale-105">
+            <i class="fab fa-whatsapp mr-2"></i> WhatsApp
+        </a>
+    </div>
 </section>

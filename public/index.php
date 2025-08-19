@@ -71,14 +71,31 @@ $router->post('/contact', 'ContactController@submitContactForm');
 $router->get('/dashboard', 'DashboardController@index'); // Muestra el dashboard del usuario
 $router->get('/logout', 'AuthController@logout');       // Procesa el cierre de sesión
 
-$router->get('/admin/contacts', 'AdminController@showContacts'); // Muestra los mensajes de contacto
-
+// Rutas para Servicios Contratados
+$router->get('/services', 'ServiceController@index'); // Muestra la lista de servicios del usuario
+$router->get('/services/view', 'ServiceController@view'); // Muestra el detalle de un servicio específico
 
 // Rutas de administración
 $router->get('/admin/contacts', 'AdminController@showContacts');
 $router->post('/admin/contacts/update-status', 'AdminController@updateStatus');
 $router->post('/admin/contacts/delete', 'AdminController@deleteContact'); // Esta es la ruta que necesitas
 
+// Rutas para la gestión de Roles y Permisos (accesibles solo por administradores)
+$router->get('/admin/roles', 'RoleController@index'); // Listar roles
+$router->get('/admin/roles/edit', 'RoleController@edit'); // Mostrar formulario para editar un rol
+$router->post('/admin/roles/update', 'RoleController@update'); // Procesar la actualización de permisos de un rol
+
+// Rutas para la gestión de Usuarios (accesibles solo por administradores)
+$router->get('/admin/users', 'UserController@index'); // Listar usuarios
+$router->get('/admin/users/edit', 'UserController@edit'); // Mostrar formulario para editar el rol de un usuario
+$router->post('/admin/users/update-role', 'UserController@updateRole'); // Procesar la actualización del rol de un usuario
+$router->get('/admin/users/manage-services', 'UserController@manageServices'); // Mostrar formulario para gestionar servicios de un usuario
+$router->post('/admin/users/update-services', 'UserController@updateServices'); // Procesar la actualización de servicios de un usuario
+
+// Rutas para la gestión de Permisos de Servicios (accesibles solo por administradores)
+$router->get('/admin/services', 'AdminServiceController@index'); // Listar servicios para asignarles permisos
+$router->get('/admin/services/edit', 'AdminServiceController@edit'); // Formulario para editar permisos de un servicio
+$router->post('/admin/services/update', 'AdminServiceController@update'); // Procesar la actualización de permisos de un servicio
 
 // Dispatch de la solicitud
 // Este método analiza la URL actual y el método de la solicitud (GET, POST, etc.)

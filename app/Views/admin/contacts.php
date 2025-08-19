@@ -1,5 +1,7 @@
 <?php
 /**
+ * Se utiliza \App\Core\Auth para verificar permisos directamente en la vista.
+ * 
  * app/Views/admin/contacts.php
  * Vista para el panel de administración de mensajes de contacto.
  */
@@ -38,22 +40,26 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?= htmlspecialchars($contact['created_at']) ?></td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <form action="<?= BASE_URL ?>admin/contacts/update-status" method="POST">
-                                    <input type="hidden" name="id" value="<?= $contact['id'] ?>">
-                                    <input type="hidden" name="status" value="<?= $contact['status'] === 'Pendiente' ? 'Leído' : 'Pendiente' ?>">
-                                    
-                                    <input type="hidden" name="csrf_token" value="<?= $csrf_token ?? '' ?>">
-                                    <button type="submit" class="text-blue-600 hover:text-blue-900 font-semibold">
-                                        <?= $contact['status'] === 'Pendiente' ? 'Marcar como leído' : 'Marcar como pendiente' ?>
-                                    </button>
-                                </form>
-                                <form action="<?= BASE_URL ?>admin/contacts/delete" method="POST">
-                                    <input type="hidden" name="id" value="<?= $contact['id'] ?>">
-                                    <input type="hidden" name="csrf_token" value="<?= $csrf_token ?? '' ?>">
-                                    <button type="submit" class="text-red-600 hover:text-red-900 font-semibold" onclick="return confirm('¿Estás seguro de que quieres eliminar este mensaje?')">
-                                        Eliminar
-                                    </button>
-                                </form>
+                                <?php if (\App\Core\Auth::can('update_contact_status')): ?>
+                                    <form action="<?= BASE_URL ?>admin/contacts/update-status" method="POST" class="inline-block">
+                                        <input type="hidden" name="id" value="<?= $contact['id'] ?>">
+                                        <input type="hidden" name="status" value="<?= $contact['status'] === 'Pendiente' ? 'Leído' : 'Pendiente' ?>">
+                                        <input type="hidden" name="csrf_token" value="<?= $csrf_token ?? '' ?>">
+                                        <button type="submit" class="text-blue-600 hover:text-blue-900 font-semibold">
+                                            <?= $contact['status'] === 'Pendiente' ? 'Marcar como leído' : 'Marcar como pendiente' ?>
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
+
+                                <?php if (\App\Core\Auth::can('delete_contact')): ?>
+                                    <form action="<?= BASE_URL ?>admin/contacts/delete" method="POST" class="inline-block ml-2">
+                                        <input type="hidden" name="id" value="<?= $contact['id'] ?>">
+                                        <input type="hidden" name="csrf_token" value="<?= $csrf_token ?? '' ?>">
+                                        <button type="submit" class="text-red-600 hover:text-red-900 font-semibold" onclick="return confirm('¿Estás seguro de que quieres eliminar este mensaje?')">
+                                            Eliminar
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>

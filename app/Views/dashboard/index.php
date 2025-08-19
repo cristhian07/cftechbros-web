@@ -14,16 +14,41 @@
         <!-- Tarjeta para Servicios Contratados -->
         <div class="bg-blue-50 p-6 rounded-lg shadow-md border border-blue-100">
             <h3 class="text-2xl font-semibold text-blue-800 mb-3">Tus Servicios Contratados</h3>
-            <p class="text-gray-700">Aquí podrás ver y gestionar los servicios que has contratado con CFTechBros. ¡Próximamente!</p>
-            <a href="#" class="mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Ver Servicios</a>
+            <p class="text-gray-700">Accede al panel para ver y gestionar todos los servicios que tienes activos con nosotros.</p>
+            <a href="<?= BASE_URL ?>services" class="mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Ver Servicios</a>
         </div>
         <!-- Tarjeta para Soporte Técnico -->
         <div class="bg-green-50 p-6 rounded-lg shadow-md border border-green-100">
             <h3 class="text-2xl font-semibold text-green-800 mb-3">Soporte Técnico</h3>
             <p class="text-gray-700">Accede a nuestro equipo de soporte para cualquier consulta o incidencia.</p>
-            <a href="#" class="mt-4 inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Abrir Ticket</a>
+            <?php if (\App\Core\Auth::can('open_support_ticket')): ?>
+                <a href="#" class="mt-4 inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Abrir Ticket</a>
+            <?php else: ?>
+                <a href="#" class="mt-4 inline-block bg-gray-400 text-white font-bold py-2 px-4 rounded-lg cursor-not-allowed" title="Contrata el servicio de Soporte Técnico para habilitar esta opción">Abrir Ticket</a>
+            <?php endif; ?>
         </div>
     </div>
+
+    <?php if (\App\Core\Auth::isAdmin()): // Simplificamos: solo el admin ve todo el panel para mayor claridad ?>
+    <div class="mt-10 border-t pt-8">
+        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Panel de Administración</h3>
+        <p class="text-gray-600 mb-4">Accede a las herramientas de administración del sitio.</p>
+        <div class="flex flex-wrap justify-center gap-4">
+            <?php if (\App\Core\Auth::can('manage_users')): ?>
+                <a href="<?= BASE_URL ?>admin/users" class="inline-block bg-gray-700 hover:bg-gray-800 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Gestionar Usuarios</a>
+            <?php endif; ?>
+            <?php if (\App\Core\Auth::can('manage_roles')): ?>
+                <a href="<?= BASE_URL ?>admin/roles" class="inline-block bg-gray-700 hover:bg-gray-800 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Gestionar Roles</a>
+            <?php endif; ?>
+            <?php if (\App\Core\Auth::can('manage_service_permissions')): ?>
+                <a href="<?= BASE_URL ?>admin/services" class="inline-block bg-gray-700 hover:bg-gray-800 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Permisos de Servicios</a>
+            <?php endif; ?>
+            <?php if (\App\Core\Auth::can('view_admin_contacts')): ?>
+                <a href="<?= BASE_URL ?>admin/contacts" class="inline-block bg-gray-700 hover:bg-gray-800 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Ver Mensajes</a>
+            <?php endif; ?>
+        </div>
+    </div>
+    <?php endif; ?>
 
     <div class="mt-10">
         <p class="text-lg text-gray-700">Mantente atento/a, pronto añadiremos nuevas funcionalidades y recursos exclusivos para ti.</p>

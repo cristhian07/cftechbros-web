@@ -2,6 +2,7 @@
 namespace App\Controllers;
 
 use App\Core\Session;
+use App\Core\Auth;
 use App\Models\Contact;
 
 /**
@@ -23,9 +24,9 @@ class AdminController extends BaseController
      */
     public function showContacts()
     {
-        // Validar que el usuario esté logueado y que sea un administrador
-        if (!Session::has('user_id') || Session::get('user_role') !== 'admin') {
-            $this->redirect('login'); // Redirige al login si no está logueado o no es admin
+        // Usar el nuevo sistema de permisos. Redirige si no tiene el permiso.
+        if (!Auth::can('view_admin_contacts')) {
+            $this->redirect('dashboard');
         }
 
         $contacts = $this->contactModel->getAllContacts();
@@ -41,9 +42,8 @@ class AdminController extends BaseController
      */
     public function updateStatus()
     {
-        // Validar que el usuario esté logueado y que sea un administrador
-        if (!Session::has('user_id') || Session::get('user_role') !== 'admin') {
-            $this->redirect('login'); // Redirige al login si no está logueado o no es admin
+        if (!Auth::can('update_contact_status')) {
+            $this->redirect('admin/contacts');
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -69,9 +69,8 @@ class AdminController extends BaseController
      */
     public function deleteContact()
     {
-        // Validar que el usuario esté logueado y que sea un administrador
-        if (!Session::has('user_id') || Session::get('user_role') !== 'admin') {
-            $this->redirect('login'); // Redirige al login si no está logueado o no es admin
+        if (!Auth::can('delete_contact')) {
+            $this->redirect('admin/contacts');
         }
 
         $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);

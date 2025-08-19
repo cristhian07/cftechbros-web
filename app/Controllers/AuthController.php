@@ -69,10 +69,16 @@ class AuthController extends BaseController
             $user = $this->userModel->findByUsername($username);
 
             if ($user && password_verify($password, $user['password'])) {
-                // Inicio de sesión exitoso
+                // Inicio de sesión exitoso. Obtener permisos del usuario.
+                // NOTA: Esto requiere un nuevo método en el modelo User, getPermissions($userId),
+                // que debería hacer un JOIN entre users, roles, role_permissions y permissions
+                // para obtener una lista [ 'permiso1', 'permiso2', ... ].
+                $permissions = $this->userModel->getPermissions($user['id']);
+
                 Session::set('user_id', $user['id']);
-                Session::set('username', $user['username']); // <--- ASEGÚRATE DE QUE ESTA LÍNEA ESTÉ AQUÍ
-                Session::set('user_role', $user['role']); // Esta ya la agregamos para la validación de admin
+                Session::set('username', $user['username']);
+                Session::set('user_role', $user['role_name']); // 'role_name' es el nombre del rol, ej: 'admin', 'editor'
+                Session::set('user_permissions', $permissions); // Guardar los permisos en la sesión
                 Session::delete('csrf_token'); // Eliminar el token CSRF después de un uso exitoso
 
                 $this->redirect('dashboard');
@@ -163,7 +169,12 @@ class AuthController extends BaseController
 
             $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
-            if ($this->userModel->create($username, $email, $hashedPassword)) {
+            // Al registrar un nuevo usuario, se le asigna el rol 'user' por defecto.
+            // Asumimos que el rol 'user' tiene el ID 3 según nuestro SQL de inserción.
+            // En una aplicación más compleja, podrías buscar el ID del rol por su nombre.
+            $defaultRoleId = 3; 
+
+            if ($this->userModel->create($username, $email, $hashedPassword, $defaultRoleId)) {
                 $this->view('auth/login', ['success' => 'Registro exitoso. ¡Ahora puedes iniciar sesión!', 'csrf_token' => Session::generateCsrfToken()]);
             } else {
                 $this->view('auth/register', ['error' => 'Error al registrar el usuario. Por favor, inténtalo de nuevo.', 'csrf_token' => Session::generateCsrfToken()]);

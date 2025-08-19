@@ -77,6 +77,8 @@ $router->get('/admin/contacts', 'AdminController@showContacts'); // Muestra los 
 // Rutas de administración
 $router->get('/admin/contacts', 'AdminController@showContacts');
 $router->post('/admin/contacts/update-status', 'AdminController@updateStatus');
+$router->post('/admin/contacts/delete', 'AdminController@deleteContact'); // Esta es la ruta que necesitas
+
 
 // Dispatch de la solicitud
 // Este método analiza la URL actual y el método de la solicitud (GET, POST, etc.)

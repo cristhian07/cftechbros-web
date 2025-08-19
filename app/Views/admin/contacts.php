@@ -47,6 +47,13 @@
                                         <?= $contact['status'] === 'Pendiente' ? 'Marcar como leído' : 'Marcar como pendiente' ?>
                                     </button>
                                 </form>
+                                <form action="<?= BASE_URL ?>admin/contacts/delete" method="POST">
+                                    <input type="hidden" name="id" value="<?= $contact['id'] ?>">
+                                    <input type="hidden" name="csrf_token" value="<?= $csrf_token ?? '' ?>">
+                                    <button type="submit" class="text-red-600 hover:text-red-900 font-semibold" onclick="return confirm('¿Estás seguro de que quieres eliminar este mensaje?')">
+                                        Eliminar
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                     <?php endforeach; ?>

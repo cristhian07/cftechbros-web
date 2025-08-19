@@ -62,4 +62,23 @@ class AdminController extends BaseController
         }
         $this->redirect('admin/contacts');
     }
+    /**
+     * Elimina un mensaje de contacto.
+     * Se accede a través de una petición POST.
+     * Requiere que el usuario esté logueado y sea administrador.
+     */
+    public function deleteContact()
+    {
+        // Validar que el usuario esté logueado y que sea un administrador
+        if (!Session::has('user_id') || Session::get('user_role') !== 'admin') {
+            $this->redirect('login'); // Redirige al login si no está logueado o no es admin
+        }
+
+        $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+
+        if ($id) {
+            $this->contactModel->delete($id);
+        }
+        $this->redirect('admin/contacts');
+    }
 }

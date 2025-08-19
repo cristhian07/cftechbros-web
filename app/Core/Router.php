@@ -47,6 +47,16 @@ class Router
     }
 
     /**
+     * Método abreviado para añadir rutas DELETE.
+     * @param string $uri La URI de la ruta.
+     * @param string $controller El controlador y método a llamar.
+     */
+    public function delete($uri, $controller)
+    {
+        $this->add('DELETE', $uri, $controller);
+    }
+
+    /**
      * Despacha la solicitud actual al controlador y método correspondientes.
      * Si no se encuentra una ruta, muestra un error 404.
      */

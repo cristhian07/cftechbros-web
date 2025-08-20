@@ -73,7 +73,7 @@ $router->get('/logout', 'AuthController@logout');       // Procesa el cierre de 
 
 // Rutas para Servicios Contratados
 $router->get('/services', 'ServiceController@index'); // Muestra la lista de servicios del usuario
-$router->get('/services/view', 'ServiceController@view'); // Muestra el detalle de un servicio específico
+$router->get('/services/view', 'ServiceController@show'); // Muestra el detalle de un servicio específico
 
 // Rutas de administración
 $router->get('/admin/contacts', 'AdminController@showContacts');
@@ -95,6 +95,8 @@ $router->post('/admin/users/update-services', 'UserController@updateServices'); 
 // Rutas para la gestión de Permisos de Servicios (accesibles solo por administradores)
 $router->get('/admin/services', 'AdminServiceController@index'); // Listar servicios para asignarles permisos
 $router->get('/admin/services/edit', 'AdminServiceController@edit'); // Formulario para editar permisos de un servicio
+$router->get('/admin/services/create', 'AdminServiceController@create'); // Formulario para crear un nuevo servicio
+$router->post('/admin/services/store', 'AdminServiceController@store'); // Procesar la creación de un nuevo servicio
 $router->post('/admin/services/update', 'AdminServiceController@update'); // Procesar la actualización de permisos de un servicio
 
 // Dispatch de la solicitud

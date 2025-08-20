@@ -62,6 +62,55 @@ class Service
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Crea un nuevo servicio y su permiso de acceso asociado de forma transaccional.
+     * @param string $name
+     * @param string $description
+     * @param string $icon_class
+     * @param string $route
+     * @return bool
+     */
+    public function create($name, $description, $icon_class, $route)
+    {
+        // Generar un nombre de permiso único y seguro basado en el nombre del servicio.
+        // Ej: "Soporte Técnico" -> "access_soporte_tecnico"
+        $permissionName = 'access_' . strtolower(preg_replace('/[^a-zA-Z0-9]+/', '_', str_replace(' ', '_', iconv('UTF-8', 'ASCII//TRANSLIT', $name))));
+        $permissionDescription = "Permite el acceso al servicio: " . $name;
+
+        $this->db->beginTransaction();
+
+        try {
+            // 1. Insertar el nuevo servicio
+            $sqlService = "INSERT INTO services (name, description, icon_class, route) VALUES (:name, :description, :icon_class, :route)";
+            $stmtService = $this->db->prepare($sqlService);
+            $stmtService->execute([
+                ':name' => $name,
+                ':description' => $description,
+                ':icon_class' => $icon_class,
+                ':route' => $route
+            ]);
+            $serviceId = $this->db->lastInsertId();
+
+            // 2. Insertar el nuevo permiso asociado
+            $sqlPermission = "INSERT INTO permissions (name, description) VALUES (:name, :description)";
+            $stmtPermission = $this->db->prepare($sqlPermission);
+            $stmtPermission->execute([':name' => $permissionName, ':description' => $permissionDescription]);
+            $permissionId = $this->db->lastInsertId();
+
+            // 3. Vincular el servicio con su nuevo permiso en la tabla pivote
+            $sqlLink = "INSERT INTO service_permission (service_id, permission_id) VALUES (:service_id, :permission_id)";
+            $stmtLink = $this->db->prepare($sqlLink);
+            $stmtLink->execute([':service_id' => $serviceId, ':permission_id' => $permissionId]);
+
+            $this->db->commit();
+            return true;
+        } catch (\Exception $e) {
+            $this->db->rollBack();
+            error_log("Error al crear servicio: " . $e->getMessage()); // Opcional: para depuración
+            return false;
+        }
+    }
+
     public function findById($id)
     {
         $stmt = $this->db->prepare("SELECT * FROM services WHERE id = :id");

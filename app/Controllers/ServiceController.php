@@ -35,7 +35,7 @@ class ServiceController extends BaseController
     /**
      * Muestra la vista detallada de un servicio específico.
      */
-    public function view()
+    public function show()
     {
         $userId = Session::get('user_id');
         $serviceId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);

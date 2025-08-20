@@ -64,6 +64,50 @@ class AdminServiceController extends BaseController
     }
 
     /**
+     * Muestra el formulario para crear un nuevo servicio.
+     */
+    public function create()
+    {
+        $this->view('admin/services/create', [
+            'csrf_token' => Session::generateCsrfToken()
+        ]);
+    }
+
+    /**
+     * Almacena un nuevo servicio en la base de datos.
+     */
+    public function store()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $csrfToken = filter_input(INPUT_POST, 'csrf_token');
+            if (!Session::verifyCsrfToken($csrfToken)) {
+                $this->redirect('admin/services');
+                return;
+            }
+
+            $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
+            $description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING);
+            $icon_class = filter_input(INPUT_POST, 'icon_class', FILTER_SANITIZE_STRING);
+            
+            // La ruta por defecto para acceder a un servicio será 'services/view'
+            $route = 'services/view';
+
+            if (empty($name) || empty($description) || empty($icon_class)) {
+                $this->view('admin/services/create', [
+                    'errors' => ['Todos los campos son obligatorios.'],
+                    'csrf_token' => Session::generateCsrfToken()
+                ]);
+                return;
+            }
+
+            if ($this->serviceModel->create($name, $description, $icon_class, $route)) {
+                Session::set('success_message', 'Servicio "' . htmlspecialchars($name) . '" creado correctamente. Se ha generado y asignado un permiso de acceso automático.');
+            }
+        }
+        $this->redirect('admin/services');
+    }
+
+    /**
      * Actualiza los permisos de un servicio.
      */
     public function update()

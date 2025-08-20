@@ -52,10 +52,13 @@ class RoleController extends BaseController
         $all_permissions = $this->permissionModel->getAll();
         $role_permissions = $this->roleModel->getPermissions($role_id);
 
+        // Extraer solo los IDs de los permisos que el rol ya tiene, para facilitar la comprobación en la vista.
+        $role_permissions_ids = array_column($role_permissions, 'id');
+
         $this->view('admin/roles/edit', [
             'role' => $role,
             'all_permissions' => $all_permissions,
-            'role_permissions' => $role_permissions,
+            'role_permissions_ids' => $role_permissions_ids,
             'csrf_token' => Session::generateCsrfToken()
         ]);
     }

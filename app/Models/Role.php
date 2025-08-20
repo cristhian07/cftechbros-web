@@ -30,7 +30,8 @@ class Role
 
     public function getPermissions($roleId)
     {
-        $sql = "SELECT p.name 
+        // Se modifica para devolver tanto el ID como el nombre, para que el controlador pueda extraer los IDs fácilmente.
+        $sql = "SELECT p.id, p.name 
                 FROM permissions p
                 JOIN role_permission rp ON p.id = rp.permission_id
                 WHERE rp.role_id = :role_id";
@@ -38,10 +39,10 @@ class Role
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':role_id', $roleId, PDO::PARAM_INT);
         $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_COLUMN);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function updatePermissions($roleId, $permissionNames)
+    public function updatePermissions($roleId, $permissionIds)
     {
         $this->db->beginTransaction();
         try {
@@ -50,19 +51,12 @@ class Role
             $stmt->bindParam(':role_id', $roleId, PDO::PARAM_INT);
             $stmt->execute();
 
-            // 2. Obtener los IDs de los permisos a partir de sus nombres
-            if (!empty($permissionNames)) {
-                $placeholders = implode(',', array_fill(0, count($permissionNames), '?'));
-                $sql = "SELECT id FROM permissions WHERE name IN ($placeholders)";
-                $stmt = $this->db->prepare($sql);
-                $stmt->execute($permissionNames);
-                $permissionIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
-                // 3. Insertar los nuevos permisos para el rol
+            // 2. Insertar los nuevos permisos para el rol directamente con los IDs recibidos del formulario.
+            if (!empty($permissionIds)) {
                 $insertSql = "INSERT INTO role_permission (role_id, permission_id) VALUES (:role_id, :permission_id)";
                 $stmt = $this->db->prepare($insertSql);
                 foreach ($permissionIds as $permissionId) {
-                    $stmt->execute(['role_id' => $roleId, 'permission_id' => $permissionId]);
+                    $stmt->execute(['role_id' => $roleId, 'permission_id' => (int)$permissionId]);
                 }
             }
 
@@ -70,6 +64,7 @@ class Role
             return true;
         } catch (\Exception $e) {
             $this->db->rollBack();
+            // Opcional: registrar el error en un log. error_log($e->getMessage());
             return false;
         }
     }

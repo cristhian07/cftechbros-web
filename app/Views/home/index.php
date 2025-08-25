@@ -4,11 +4,40 @@
  * Vista de la página principal de presentación de CFTechBros, con un diseño moderno.
  */
 ?>
-<section class="text-center mb-12">
-    <h1 class="text-5xl font-extrabold text-blue-800 mb-4 animate-fade-in-down">CFTechBros: Tu Socio en Innovación Tecnológica</h1>
-    <p class="text-xl text-gray-700 max-w-3xl mx-auto animate-fade-in-up">
-        Transformamos tus ideas en soluciones digitales robustas y escalables. Expertos en desarrollo de software, consultoría y soluciones a medida.
-    </p>
+<!-- Sección de Banner Dinámico -->
+<section id="banner-container" class="relative h-80 md:h-96 mb-12 overflow-hidden rounded-lg shadow-2xl">
+    <!-- Contenedor de las imágenes del slider -->
+    <div id="banner-slider" class="h-full w-full flex transition-transform duration-1000 ease-in-out">
+        <!-- Slide 1 -->
+        <div class="banner-slide h-full w-full flex-shrink-0 bg-cover bg-center" style="background-image: url('<?= BASE_URL ?>images/banner-tech-1.jpg');"></div>
+        <!-- Slide 2 -->
+        <div class="banner-slide h-full w-full flex-shrink-0 bg-cover bg-center" style="background-image: url('<?= BASE_URL ?>images/banner-tech-2.jpg');"></div>
+        <!-- Slide 3 -->
+        <div class="banner-slide h-full w-full flex-shrink-0 bg-cover bg-center" style="background-image: url('<?= BASE_URL ?>images/banner-tech-3.jpg');"></div>
+    </div>
+
+    <!-- Capa de superposición con texto -->
+    <div class="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-center items-center text-center text-white p-4">
+        <h1 class="text-4xl md:text-5xl font-extrabold mb-4 animate-fade-in-down" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.7);">
+            CFTechBros: Tu Socio en Innovación Tecnológica
+        </h1>
+        <p class="text-lg md:text-xl max-w-3xl mx-auto animate-fade-in-up" style="text-shadow: 1px 1px 3px rgba(0,0,0,0.7);">
+            Transformamos tus ideas en soluciones digitales robustas y escalables.
+        </p>
+    </div>
+
+    <!-- Botones de Navegación -->
+    <button id="banner-prev" class="banner-nav-btn absolute top-1/2 left-4 -translate-y-1/2">
+        <i class="fas fa-chevron-left"></i>
+    </button>
+    <button id="banner-next" class="banner-nav-btn absolute top-1/2 right-4 -translate-y-1/2">
+        <i class="fas fa-chevron-right"></i>
+    </button>
+
+    <!-- Puntos de Navegación -->
+    <div id="banner-dots" class="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
+        <!-- Los puntos se generarán con JS -->
+    </div>
 </section>
 
 <!-- Separador visual -->

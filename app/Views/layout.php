@@ -206,6 +206,59 @@
                 localStorage.setItem('theme', 'dark');
             }
         });
+
+        // Lógica para el banner de la página de inicio
+        document.addEventListener('DOMContentLoaded', () => {
+            const bannerContainer = document.getElementById('banner-container');
+            if (bannerContainer) {
+                const slider = document.getElementById('banner-slider');
+                const slides = document.querySelectorAll('.banner-slide');
+                const prevBtn = document.getElementById('banner-prev');
+                const nextBtn = document.getElementById('banner-next');
+                const dotsContainer = document.getElementById('banner-dots');
+                
+                let currentSlide = 0;
+                const totalSlides = slides.length;
+                let slideInterval;
+
+                if (totalSlides > 1) {
+                    // Crear puntos de navegación
+                    for (let i = 0; i < totalSlides; i++) {
+                        const dot = document.createElement('button');
+                        dot.classList.add('banner-dot');
+                        dot.addEventListener('click', () => goToSlide(i));
+                        dotsContainer.appendChild(dot);
+                    }
+                    const dots = dotsContainer.children;
+
+                    // Función para ir a un slide específico
+                    const goToSlide = (slideIndex) => {
+                        slider.style.transform = `translateX(-${slideIndex * 100}%)`;
+                        if (dots.length > 0) {
+                            dots[currentSlide].classList.remove('active');
+                            dots[slideIndex].classList.add('active');
+                        }
+                        currentSlide = slideIndex;
+                        resetInterval();
+                    };
+
+                    // Función para reiniciar el intervalo de auto-desplazamiento
+                    const resetInterval = () => {
+                        clearInterval(slideInterval);
+                        slideInterval = setInterval(() => {
+                            goToSlide((currentSlide + 1) % totalSlides);
+                        }, 5000); // Cambia de imagen cada 5 segundos
+                    };
+
+                    // Event listeners para los botones
+                    nextBtn.addEventListener('click', () => goToSlide((currentSlide + 1) % totalSlides));
+                    prevBtn.addEventListener('click', () => goToSlide((currentSlide - 1 + totalSlides) % totalSlides));
+
+                    // Iniciar el carrusel
+                    goToSlide(0);
+                }
+            }
+        });
     </script>
 </body>
 </html>

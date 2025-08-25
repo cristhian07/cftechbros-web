@@ -82,8 +82,11 @@ $router->post('/admin/contacts/delete', 'AdminController@deleteContact'); // Est
 
 // Rutas para la gestión de Roles y Permisos (accesibles solo por administradores)
 $router->get('/admin/roles', 'RoleController@index'); // Listar roles
+$router->get('/admin/roles/create', 'RoleController@create'); // Formulario para crear un rol
+$router->post('/admin/roles/store', 'RoleController@store'); // Procesar la creación de un rol
 $router->get('/admin/roles/edit', 'RoleController@edit'); // Mostrar formulario para editar un rol
 $router->post('/admin/roles/update', 'RoleController@update'); // Procesar la actualización de permisos de un rol
+$router->post('/admin/roles/delete', 'RoleController@delete'); // Procesar la eliminación de un rol
 
 // Rutas para la gestión de Usuarios (accesibles solo por administradores)
 $router->get('/admin/users', 'UserController@index'); // Listar usuarios

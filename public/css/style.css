@@ -33,14 +33,22 @@
     animation-delay: 0.3s; /* Retraso para que aparezca después del título */
 }
 
-/* Opcional: Estilo para los iconos de servicio si no usas placehold.co */
-/* .service-icon {
-    width: 100px;
-    height: 100px;
-    background-color: #e0f2fe;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1.5rem;
-} */
+/* Estilos para las nuevas tarjetas de servicio con efecto "glassmorphism" */
+.service-card {
+    background: var(--service-card-bg);
+    border: 1px solid var(--service-card-border);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15); /* Sombra suave */
+}
+/* Se aplica el desenfoque solo si el navegador lo soporta para mejorar la compatibilidad */
+@supports (backdrop-filter: blur(10px)) or (-webkit-backdrop-filter: blur(10px)) {
+    .service-card {
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+}
+
+/* Contenedor del icono con gradiente */
+.icon-container {
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}

@@ -40,11 +40,21 @@
         </div>
         <div>
             <label for="password" class="block text-gray-700 text-sm font-semibold mb-2">Contraseña:</label>
-            <input type="password" id="password" name="password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            <div class="relative">
+                <input type="password" id="password" name="password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10" required>
+                <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-gray-700 focus:outline-none">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
         </div>
         <div>
             <label for="confirm_password" class="block text-gray-700 text-sm font-semibold mb-2">Confirmar Contraseña:</label>
-            <input type="password" id="confirm_password" name="confirm_password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            <div class="relative">
+                <input type="password" id="confirm_password" name="confirm_password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10" required>
+                <button type="button" id="toggleConfirmPassword" class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-gray-700 focus:outline-none">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
         </div>
         <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-300 transform hover:scale-105">
             Registrarse
@@ -54,3 +64,26 @@
         ¿Ya tienes una cuenta? <a href="<?= BASE_URL ?>login" class="text-blue-600 hover:underline font-semibold">Inicia Sesión aquí</a>
     </p>
 </div>
+
+<script>
+    function setupPasswordToggle(inputId, toggleButtonId) {
+        const toggleButton = document.getElementById(toggleButtonId);
+        const passwordInput = document.getElementById(inputId);
+
+        if (!toggleButton || !passwordInput) return;
+
+        toggleButton.addEventListener('click', function() {
+            const icon = this.querySelector('i');
+            // toggle the type attribute
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            
+            // toggle the icon
+            icon.classList.toggle('fa-eye');
+            icon.classList.toggle('fa-eye-slash');
+        });
+    }
+
+    setupPasswordToggle('password', 'togglePassword');
+    setupPasswordToggle('confirm_password', 'toggleConfirmPassword');
+</script>

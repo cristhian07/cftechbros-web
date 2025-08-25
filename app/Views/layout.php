@@ -21,49 +21,105 @@
     <!-- Iconos de Font Awesome para el botón de modo (luna/sol) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
-
     <style>
-        /* Estilo personalizado para la fuente Inter en todo el cuerpo */
-        body {
-            font-family: 'Inter', sans-serif;
-            transition: background-color 0.3s ease, color 0.3s ease; /* Suaviza la transición de color de fondo y texto */
+        /* 
+         * Se utilizan variables CSS (:root) para estandarizar los colores en toda la aplicación.
+         * Esto mejora la consistencia entre navegadores y facilita el mantenimiento del tema.
+         * El tema oscuro se activa simplemente añadiendo la clase 'dark' al tag <html>,
+         * lo que sobreescribe las variables de color.
+        */
+        :root {
+            --bg-body-start: #e0f2fe;
+            --bg-body-mid: #f0f4f8;
+            --bg-body-end: #fefce8;
+            --bg-card: #ffffff;
+            --bg-card-secondary: #f9fafb; /* bg-gray-50 */
+            --bg-header: #1e40af; /* bg-blue-800 */
+            --text-main: #1f2937; /* text-gray-800 */
+            --text-secondary: #4b5563; /* text-gray-600 */
+            --text-muted: #6b7280; /* text-gray-500 */
+            --text-accent: #1d4ed8; /* text-blue-800 */
+            --text-accent-light: #2563eb; /* text-blue-700 */
+            --text-inverted: #ffffff;
+            --border-primary: #e5e7eb; /* border-gray-200 */
+            --border-secondary: #d1d5db; /* border-gray-300 */
+            --service-card-bg: rgba(255, 255, 255, 0.2);
+            --service-card-border: rgba(255, 255, 255, 0.3);
         }
 
-        /* Clases para el modo oscuro con contraste mejorado */
-        .dark .bg-gray-100 { background-color: #0d1117; } /* Fondo del body (casi negro) */
-        .dark .text-gray-900 { color: #f0f6fc; } /* Color de texto general (blanco brillante) */
+        html.dark {
+            --bg-body-start: #010409;
+            --bg-body-mid: #0d1117;
+            --bg-body-end: #1f1a24;
+            --bg-card: #161b22;
+            --bg-card-secondary: #0d1117; /* Same as body bg for subtle difference */
+            --bg-header: #010409;
+            --text-main: #f9fafb; /* gray-50, casi blanco */
+            --text-secondary: #d1d5db; /* gray-300, gris claro */
+            --text-muted: #9ca3af; /* gray-400, gris más suave */
+            --text-accent: #60a5fa;
+            --text-accent-light: #93c5fd;
+            --text-inverted: #f9fafb;
+            --border-primary: #30363d;
+            --border-secondary: #4a5568;
+            --service-card-bg: rgba(22, 27, 34, 0.5);
+            --service-card-border: rgba(56, 62, 74, 0.8);
+        }
 
-        .dark .bg-white { background-color: #161b22; } /* Fondo de cards/secciones principales (gris oscuro) */
-        .dark .text-blue-800 { color: #58a6ff; } /* Títulos azules en modo claro (azul claro para contraste) */
-        .dark .text-blue-700 { color: #79c0ff; } /* Títulos más claros (azul más claro) */
-        .dark .text-gray-700 { color: #c9d1d9; } /* Texto gris oscuro en modo claro (gris claro para contraste) */
+        /* 
+         * Overrides para las clases de utilidad de Tailwind en modo oscuro.
+         * Esto asegura que los componentes que usan clases de Tailwind (ej. text-gray-700)
+         * también se adapten al tema oscuro, usando los colores definidos en las variables CSS.
+        */
+        html.dark .text-gray-900,
+        html.dark .text-gray-800 { color: var(--text-main); }
+        html.dark .text-gray-700,
+        html.dark .text-gray-600 { color: var(--text-secondary); }
+        html.dark .text-gray-500 { color: var(--text-muted); }
+
+        html.dark .bg-white { background-color: var(--bg-card); }
+        html.dark .bg-gray-50,
+        html.dark .bg-gray-100 { background-color: var(--bg-card-secondary); }
+
+        html.dark .border-gray-200,
+        html.dark .border-blue-300 { border-color: var(--border-primary); }
+        html.dark .border-gray-300 { border-color: var(--border-secondary); }
+        html.dark .divide-gray-200 > :not([hidden]) ~ :not([hidden]) { border-color: var(--border-primary); }
+
+        html.dark .text-blue-800 { color: var(--text-accent); }
+        html.dark .text-blue-700 { color: var(--text-accent-light); }
+        html.dark .text-blue-600 { color: var(--text-accent-light); }
+        html.dark .text-indigo-600 { color: #a5b4fc; } /* indigo-300 */
+        html.dark .hover\:text-indigo-900:hover { color: #818cf8; } /* indigo-400 */
+        html.dark .text-red-600 { color: #f87171; } /* red-400 */
+        html.dark .hover\:text-red-900:hover { color: #ef4444; } /* red-500 */
         
-        .dark .border-blue-200 { border-color: #30363d; } /* Bordes más oscuros */
-        .dark .bg-blue-50 { background-color: #2b6cb0; } /* Fondos más claros (azul oscuro) */
-        .dark .bg-blue-800 { background-color: #010409; } /* Header y Footer (casi negro, con un toque de azul) */
-        .dark .text-white { color: #e6edf3; } /* Texto blanco en modo claro (grisáceo claro) */
+        html.dark .placeholder-gray-400::placeholder { color: var(--text-muted); }
 
-        /* Ajustes para los botones de la cabecera */
-        .dark .bg-green-600 { background-color: #2ea043; } /* Iniciar Sesión */
-        .dark .hover\:bg-green-700:hover { background-color: #238636; }
-        .dark .bg-blue-600 { background-color: #3b82f6; } /* Registrarse */
-        .dark .hover\:bg-blue-700:hover { background-color: #2563eb; }
-        .dark .bg-red-600 { background-color: #da3633; } /* Cerrar Sesión */
-        .dark .hover\:bg-red-700:hover { background-color: #bb2825; }
+        /* Estilos para inputs en modo oscuro para garantizar la visibilidad del texto */
+        html.dark input[type="text"],
+        html.dark input[type="password"],
+        html.dark input[type="email"],
+        html.dark textarea {
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            border-color: var(--border-secondary);
+        }
 
-        /* Ajustes para los placehold.co (los iconos de servicio) */
-        .dark img[src*="placehold.co"] {
-            /* Puedes ajustar el filtro CSS para oscurecer o invertir los colores de las imágenes si es necesario */
-            /* filter: invert(0.8) hue-rotate(180deg); */ 
-            background-color: #30363d; /* Fondo de los círculos de icono más oscuro */
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            color: var(--text-main);
+            background-color: var(--bg-body-mid);
+            background-image: linear-gradient(135deg, var(--bg-body-start) 0%, var(--bg-body-mid) 50%, var(--bg-body-end) 100%);
         }
     </style>
     <!-- Enlace a tu archivo CSS personalizado (si lo usas) -->
     <link rel="stylesheet" href="<?= BASE_URL ?>css/style.css">
 </head>
-<body class="bg-gray-100 text-gray-900 min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col">
     <!-- Cabecera de la página -->
-    <header class="bg-blue-800 text-white p-4 shadow-md">
+    <header class="p-4 shadow-md" style="background-color: var(--bg-header); color: var(--text-inverted);">
         <div class="container mx-auto flex justify-between items-center">
             <!-- Logo/Nombre de la empresa -->
             <a href="<?= BASE_URL ?>" class="text-2xl font-bold rounded-md px-2 py-1 hover:bg-blue-700 transition duration-300">CFTechBros</a>
@@ -89,7 +145,7 @@
     </header>
 
     <!-- Contenido principal (aquí se cargará la vista específica de cada página) -->
-    <main class="flex-grow container mx-auto p-6 my-8 bg-white rounded-lg shadow-xl">
+    <main class="flex-grow container mx-auto p-6 my-8">
         <?php
         // `$path` viene del controlador y especifica qué vista cargar (ej. 'home/index')
         $viewPath = ROOT_PATH . 'app/Views/' . $path . '.php';
@@ -103,7 +159,7 @@
     </main>
 
     <!-- Pie de página -->
-    <footer class="bg-blue-800 text-white p-6 mt-8 shadow-inner">
+    <footer class="p-6 mt-8 shadow-inner" style="background-color: var(--bg-header); color: var(--text-inverted);">
         <div class="container mx-auto text-center">
             <p>&copy; <?= date('Y') ?> CFTechBros. Todos los derechos reservados.</p>
         </div>
@@ -112,16 +168,16 @@
     <script>
         const themeToggle = document.getElementById('theme-toggle');
         const themeIcon = document.getElementById('theme-icon');
-        const body = document.body;
+        const htmlEl = document.documentElement;
 
         // Función para aplicar el tema
         function applyTheme(theme) {
             if (theme === 'dark') {
-                body.classList.add('dark');
+                htmlEl.classList.add('dark');
                 themeIcon.classList.remove('fa-moon');
                 themeIcon.classList.add('fa-sun');
             } else {
-                body.classList.remove('dark');
+                htmlEl.classList.remove('dark');
                 themeIcon.classList.remove('fa-sun');
                 themeIcon.classList.add('fa-moon');
             }
@@ -142,7 +198,7 @@
 
         // Cambiar tema al hacer clic en el botón
         themeToggle.addEventListener('click', () => {
-            if (body.classList.contains('dark')) {
+            if (htmlEl.classList.contains('dark')) {
                 applyTheme('light');
                 localStorage.setItem('theme', 'light');
             } else {

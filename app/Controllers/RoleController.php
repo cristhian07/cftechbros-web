@@ -31,7 +31,15 @@ class RoleController extends BaseController
         $roles = $this->roleModel->getAll();
         $successMessage = Session::get('success_message');
         Session::delete('success_message'); // Limpiar el mensaje después de mostrarlo
-        $this->view('admin/roles/index', ['roles' => $roles, 'success' => $successMessage]);
+        $errorMessage = Session::get('error_message');
+        Session::delete('error_message');
+
+        $this->view('admin/roles/index', [
+            'roles' => $roles,
+            'success' => $successMessage,
+            'error' => $errorMessage,
+            'csrf_token' => Session::generateCsrfToken()
+        ]);
     }
 
     /**
@@ -61,6 +69,83 @@ class RoleController extends BaseController
             'role_permissions_ids' => $role_permissions_ids,
             'csrf_token' => Session::generateCsrfToken()
         ]);
+    }
+
+    /**
+     * Muestra el formulario para crear un nuevo rol.
+     */
+    public function create()
+    {
+        $this->view('admin/roles/create', [
+            'csrf_token' => Session::generateCsrfToken()
+        ]);
+    }
+
+    /**
+     * Almacena un nuevo rol en la base de datos.
+     */
+    public function store()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $csrfToken = filter_input(INPUT_POST, 'csrf_token');
+            if (!Session::verifyCsrfToken($csrfToken)) {
+                $this->redirect('admin/roles');
+                return;
+            }
+
+            $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
+            $description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING);
+
+            if (empty($name) || empty($description)) {
+                Session::set('error_message', 'El nombre y la descripción del rol son obligatorios.');
+                // Idealmente, también se deberían devolver los valores introducidos al formulario.
+                $this->redirect('admin/roles/create');
+                return;
+            }
+
+            if ($this->roleModel->create($name, $description)) {
+                Session::set('success_message', 'Rol "' . htmlspecialchars($name) . '" creado correctamente.');
+            } else {
+                Session::set('error_message', 'Error al crear el rol. Es posible que el nombre ya exista.');
+            }
+        }
+        $this->redirect('admin/roles');
+    }
+
+    /**
+     * Elimina un rol.
+     */
+    public function delete()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $csrfToken = filter_input(INPUT_POST, 'csrf_token');
+            if (!Session::verifyCsrfToken($csrfToken)) {
+                $this->redirect('admin/roles');
+                return;
+            }
+
+            $role_id = filter_input(INPUT_POST, 'role_id', FILTER_VALIDATE_INT);
+            $role = $this->roleModel->findById($role_id);
+
+            if (!$role || $role['name'] === 'admin' || $role['name'] === 'user') {
+                Session::set('error_message', 'Este rol está protegido y no puede ser eliminado.');
+                $this->redirect('admin/roles');
+                return;
+            }
+
+            if ($this->roleModel->isRoleInUse($role_id)) {
+                Session::set('error_message', 'No se puede eliminar el rol "' . htmlspecialchars($role['name']) . '" porque está asignado a uno o más usuarios.');
+                $this->redirect('admin/roles');
+                return;
+            }
+
+            if ($this->roleModel->delete($role_id)) {
+                Session::set('success_message', 'Rol "' . htmlspecialchars($role['name']) . '" eliminado correctamente.');
+            } else {
+                Session::set('error_message', 'Error al eliminar el rol.');
+            }
+        }
+        $this->redirect('admin/roles');
     }
 
     /**

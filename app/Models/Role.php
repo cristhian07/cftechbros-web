@@ -42,6 +42,56 @@ class Role
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function create($name, $description)
+    {
+        try {
+            $sql = "INSERT INTO {$this->table} (name, description) VALUES (:name, :description)";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':name', $name);
+            $stmt->bindParam(':description', $description);
+            return $stmt->execute();
+        } catch (\PDOException $e) {
+            // Si hay un error (ej. constraint de nombre único), devuelve false.
+            return false;
+        }
+    }
+
+    public function delete($id)
+    {
+        $this->db->beginTransaction();
+        try {
+            // 1. Borrar asociaciones de permisos del rol
+            $stmt = $this->db->prepare("DELETE FROM role_permission WHERE role_id = :role_id");
+            $stmt->bindParam(':role_id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+
+            // 2. Borrar el rol
+            $stmt = $this->db->prepare("DELETE FROM {$this->table} WHERE id = :id");
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+
+            $this->db->commit();
+            return true;
+        } catch (\Exception $e) {
+            $this->db->rollBack();
+            // Opcional: registrar el error en un log.
+            return false;
+        }
+    }
+
+    /**
+     * Comprueba si un rol está siendo utilizado por algún usuario.
+     * @param int $roleId
+     * @return bool
+     */
+    public function isRoleInUse($roleId)
+    {
+        $stmt = $this->db->prepare("SELECT COUNT(*) FROM users WHERE role_id = :role_id");
+        $stmt->bindParam(':role_id', $roleId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchColumn() > 0;
+    }
+
     public function updatePermissions($roleId, $permissionIds)
     {
         $this->db->beginTransaction();

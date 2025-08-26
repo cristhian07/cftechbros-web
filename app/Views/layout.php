@@ -145,7 +145,10 @@
     </header>
 
     <!-- Contenido principal (aquí se cargará la vista específica de cada página) -->
-    <main class="flex-grow container mx-auto p-6 my-8">
+    <main class="flex-grow <?php 
+        // En la página de inicio, no se aplican los estilos de contenedor para permitir un banner de ancho completo.
+        if ($path !== 'home/index') echo 'container mx-auto p-6 my-8'; 
+    ?>">
         <?php
         // `$path` viene del controlador y especifica qué vista cargar (ej. 'home/index')
         $viewPath = ROOT_PATH . 'app/Views/' . $path . '.php';
@@ -234,10 +237,19 @@
                     // Función para ir a un slide específico
                     const goToSlide = (slideIndex) => {
                         slider.style.transform = `translateX(-${slideIndex * 100}%)`;
+                        
+                        // Quitar clase 'active' del slide y dot actual
+                        slides[currentSlide].classList.remove('active');
                         if (dots.length > 0) {
                             dots[currentSlide].classList.remove('active');
+                        }
+
+                        // Añadir clase 'active' al nuevo slide y dot
+                        slides[slideIndex].classList.add('active');
+                        if (dots.length > 0) {
                             dots[slideIndex].classList.add('active');
                         }
+
                         currentSlide = slideIndex;
                         resetInterval();
                     };
@@ -247,7 +259,7 @@
                         clearInterval(slideInterval);
                         slideInterval = setInterval(() => {
                             goToSlide((currentSlide + 1) % totalSlides);
-                        }, 5000); // Cambia de imagen cada 5 segundos
+                        }, 7000); // Cambia de imagen cada 7 segundos
                     };
 
                     // Event listeners para los botones

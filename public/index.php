@@ -101,6 +101,7 @@ $router->get('/admin/services/edit', 'AdminServiceController@edit'); // Formular
 $router->get('/admin/services/create', 'AdminServiceController@create'); // Formulario para crear un nuevo servicio
 $router->post('/admin/services/store', 'AdminServiceController@store'); // Procesar la creación de un nuevo servicio
 $router->post('/admin/services/update', 'AdminServiceController@update'); // Procesar la actualización de permisos de un servicio
+$router->post('/admin/services/delete', 'AdminServiceController@delete'); // Procesar la eliminación de un servicio
 
 // Dispatch de la solicitud
 // Este método analiza la URL actual y el método de la solicitud (GET, POST, etc.)

@@ -80,67 +80,23 @@
 
     <section class="mb-16">
         <h2 class="text-4xl font-bold text-center text-blue-700 mb-10">Nuestros Servicios Destacados</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-center">
-            <!-- Tarjeta de Servicio 1 -->
-            <div class="service-card p-8 rounded-2xl transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl">
-                <div class="icon-container mx-auto mb-6 w-20 h-20 flex items-center justify-center rounded-full text-white text-4xl">
-                    <i class="fas fa-laptop-code"></i>
-                </div>
-                <h3 class="text-2xl font-semibold text-blue-800 mb-4">Desarrollo de Software a Medida</h3>
-                <p class="text-gray-700 text-lg">
-                    Creamos aplicaciones web y móviles personalizadas que se adaptan perfectamente a tus necesidades de negocio. Desde MVPs hasta sistemas empresariales complejos.
-                </p>
-            </div>
-            <!-- Tarjeta de Servicio 2 -->
-            <div class="service-card p-8 rounded-2xl transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl">
-                <div class="icon-container mx-auto mb-6 w-20 h-20 flex items-center justify-center rounded-full text-white text-4xl">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                </div>
-                <h3 class="text-2xl font-semibold text-blue-800 mb-4">Consultoría Cloud y DevOps</h3>
-                <p class="text-gray-700 text-lg">
-                    Optimizamos tu infraestructura y procesos con soluciones en la nube (AWS, Azure, GCP) y metodologías DevOps para una entrega continua y eficiente.
-                </p>
-            </div>
-            <!-- Tarjeta de Servicio 3 -->
-            <div class="service-card p-8 rounded-2xl transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl">
-                <div class="icon-container mx-auto mb-6 w-20 h-20 flex items-center justify-center rounded-full text-white text-4xl">
-                    <i class="fas fa-shield-alt"></i>
-                </div>
-                <h3 class="text-2xl font-semibold text-blue-800 mb-4">Ciberseguridad y Auditorías</h3>
-                <p class="text-gray-700 text-lg">
-                    Protegemos tus activos digitales con auditorías de seguridad, implementación de políticas y soluciones avanzadas contra amenazas cibernéticas.
-                </p>
-            </div>
-            <!-- Tarjeta de Servicio 4 -->
-            <div class="service-card p-8 rounded-2xl transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl">
-                <div class="icon-container mx-auto mb-6 w-20 h-20 flex items-center justify-center rounded-full text-white text-4xl">
-                    <i class="fas fa-brain"></i>
-                </div>
-                <h3 class="text-2xl font-semibold text-blue-800 mb-4">Inteligencia Artificial y ML</h3>
-                <p class="text-gray-700 text-lg">
-                    Integramos soluciones de IA y ML para automatizar procesos, analizar datos y tomar decisiones más inteligentes, impulsando tu negocio.
-                </p>
-            </div>
-            <!-- Tarjeta de Servicio 5 -->
-            <div class="service-card p-8 rounded-2xl transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl">
-                <div class="icon-container mx-auto mb-6 w-20 h-20 flex items-center justify-center rounded-full text-white text-4xl">
-                    <i class="fas fa-headset"></i>
-                </div>
-                <h3 class="text-2xl font-semibold text-blue-800 mb-4">Soporte y Mantenimiento TI</h3>
-                <p class="text-gray-700 text-lg">
-                    Garantizamos el funcionamiento óptimo de tus sistemas con soporte técnico proactivo y mantenimiento continuo, 24/7.
-                </p>
-            </div>
-            <!-- Tarjeta de Servicio 6 -->
-            <div class="service-card p-8 rounded-2xl transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl">
-                <div class="icon-container mx-auto mb-6 w-20 h-20 flex items-center justify-center rounded-full text-white text-4xl">
-                    <i class="fas fa-chart-pie"></i>
-                </div>
-                <h3 class="text-2xl font-semibold text-blue-800 mb-4">Análisis de Datos y BI</h3>
-                <p class="text-gray-700 text-lg">
-                    Transformamos tus datos en información valiosa para una toma de decisiones estratégica, utilizando herramientas de BI líderes en el mercado.
-                </p>
-            </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <?php if (!empty($services)): ?>
+                <?php foreach ($services as $service): ?>
+                    <!-- Tarjeta de Servicio Dinámica -->
+                    <div class="service-card rounded-2xl transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl">
+                        <img src="<?= BASE_URL . htmlspecialchars($service['image_url']) ?>" alt="<?= htmlspecialchars($service['name']) ?>" class="w-full h-48 object-cover rounded-t-2xl" loading="lazy">
+                        <div class="p-6 text-center">
+                            <h3 class="text-2xl font-semibold text-blue-800 mb-4"><?= htmlspecialchars($service['name']) ?></h3>
+                            <p class="text-gray-700 text-lg">
+                                <?= htmlspecialchars($service['description']) ?>
+                            </p>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p class="text-center text-gray-500 col-span-full">No hay servicios destacados para mostrar en este momento.</p>
+            <?php endif; ?>
         </div>
     </section>
 

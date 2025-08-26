@@ -14,6 +14,18 @@ class Service
     }
 
     /**
+     * Obtiene todos los servicios marcados como destacados para la página de inicio.
+     * @return array
+     */
+    public function getFeaturedServices()
+    {
+        // Esta consulta asume que la tabla 'services' tiene las columnas 'is_featured' y 'image_url'.
+        $stmt = $this->db->prepare("SELECT name, description, image_url FROM services WHERE is_featured = 1 ORDER BY id ASC");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
      * Obtiene todos los servicios contratados y activos por un usuario específico.
      * @param int $userId
      * @return array
@@ -68,9 +80,12 @@ class Service
      * @param string $description
      * @param string $icon_class
      * @param string $route
+     * @param string|null $image_url
+     * @param int $is_featured
+     * @param array $additionalPermissionNames
      * @return bool
      */
-    public function create($name, $description, $icon_class, $route)
+    public function create($name, $description, $icon_class, $route, $image_url, $is_featured, $additionalPermissionNames)
     {
         // Generar un nombre de permiso único y seguro basado en el nombre del servicio.
         // Ej: "Soporte Técnico" -> "access_soporte_tecnico"
@@ -81,13 +96,15 @@ class Service
 
         try {
             // 1. Insertar el nuevo servicio
-            $sqlService = "INSERT INTO services (name, description, icon_class, route) VALUES (:name, :description, :icon_class, :route)";
+            $sqlService = "INSERT INTO services (name, description, icon_class, route, image_url, is_featured) VALUES (:name, :description, :icon_class, :route, :image_url, :is_featured)";
             $stmtService = $this->db->prepare($sqlService);
             $stmtService->execute([
                 ':name' => $name,
                 ':description' => $description,
                 ':icon_class' => $icon_class,
-                ':route' => $route
+                ':route' => $route,
+                ':image_url' => $image_url,
+                ':is_featured' => $is_featured
             ]);
             $serviceId = $this->db->lastInsertId();
 
@@ -101,6 +118,21 @@ class Service
             $sqlLink = "INSERT INTO service_permission (service_id, permission_id) VALUES (:service_id, :permission_id)";
             $stmtLink = $this->db->prepare($sqlLink);
             $stmtLink->execute([':service_id' => $serviceId, ':permission_id' => $permissionId]);
+
+            // 4. Vincular los permisos adicionales seleccionados
+            if (!empty($additionalPermissionNames)) {
+                $placeholders = implode(',', array_fill(0, count($additionalPermissionNames), '?'));
+                $sqlGetIds = "SELECT id FROM permissions WHERE name IN ($placeholders)";
+                $stmtGetIds = $this->db->prepare($sqlGetIds);
+                $stmtGetIds->execute($additionalPermissionNames);
+                $permissionIds = $stmtGetIds->fetchAll(PDO::FETCH_COLUMN);
+
+                $insertSql = "INSERT INTO service_permission (service_id, permission_id) VALUES (:service_id, :permission_id)";
+                $stmt = $this->db->prepare($insertSql);
+                foreach ($permissionIds as $permId) {
+                    $stmt->execute(['service_id' => $serviceId, 'permission_id' => $permId]);
+                }
+            }
 
             $this->db->commit();
             return true;
@@ -132,34 +164,113 @@ class Service
         return $stmt->fetchAll(PDO::FETCH_COLUMN);
     }
 
-    public function updatePermissions($serviceId, $permissionNames)
+    /**
+     * Actualiza un servicio existente y sus permisos asociados de forma transaccional.
+     * @param int $id
+     * @param string $name
+     * @param string $description
+     * @param string $icon_class
+     * @param string $route
+     * @param string|null $image_url
+     * @param int $is_featured
+     * @param array $permissionNames
+     * @return bool
+     */
+    public function update($id, $name, $description, $icon_class, $route, $image_url, $is_featured, $permissionNames)
     {
         $this->db->beginTransaction();
         try {
-            // 1. Borrar todos los permisos actuales del servicio
-            $stmt = $this->db->prepare("DELETE FROM service_permission WHERE service_id = :service_id");
-            $stmt->bindParam(':service_id', $serviceId, PDO::PARAM_INT);
-            $stmt->execute();
+            // 1. Actualizar los detalles del servicio
+            $sql = "UPDATE services SET name = :name, description = :description, icon_class = :icon_class, route = :route, image_url = :image_url, is_featured = :is_featured WHERE id = :id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([
+                ':id' => $id,
+                ':name' => $name,
+                ':description' => $description,
+                ':icon_class' => $icon_class,
+                ':route' => $route,
+                ':image_url' => $image_url,
+                ':is_featured' => $is_featured
+            ]);
 
-            // 2. Obtener los IDs de los permisos a partir de sus nombres
+            // 2. Actualizar los permisos (borrar e insertar)
+            $stmtDelete = $this->db->prepare("DELETE FROM service_permission WHERE service_id = :service_id");
+            $stmtDelete->execute([':service_id' => $id]);
+
             if (!empty($permissionNames)) {
                 $placeholders = implode(',', array_fill(0, count($permissionNames), '?'));
-                $sql = "SELECT id FROM permissions WHERE name IN ($placeholders)";
-                $stmt = $this->db->prepare($sql);
-                $stmt->execute($permissionNames);
-                $permissionIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
+                $sqlGetIds = "SELECT id FROM permissions WHERE name IN ($placeholders)";
+                $stmtGetIds = $this->db->prepare($sqlGetIds);
+                $stmtGetIds->execute($permissionNames);
+                $permissionIds = $stmtGetIds->fetchAll(PDO::FETCH_COLUMN);
 
-                // 3. Insertar los nuevos permisos para el servicio
                 $insertSql = "INSERT INTO service_permission (service_id, permission_id) VALUES (:service_id, :permission_id)";
                 $stmt = $this->db->prepare($insertSql);
                 foreach ($permissionIds as $permissionId) {
-                    $stmt->execute(['service_id' => $serviceId, 'permission_id' => $permissionId]);
+                    $stmt->execute(['service_id' => $id, 'permission_id' => $permissionId]);
                 }
             }
             $this->db->commit();
             return true;
         } catch (\Exception $e) {
             $this->db->rollBack();
+            error_log("Error al actualizar servicio: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Comprueba si un servicio está siendo utilizado por algún usuario.
+     * @param int $serviceId
+     * @return bool
+     */
+    public function isServiceInUse($serviceId)
+    {
+        $stmt = $this->db->prepare("SELECT COUNT(*) FROM user_service WHERE service_id = :service_id");
+        $stmt->bindParam(':service_id', $serviceId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchColumn() > 0;
+    }
+
+    /**
+     * Elimina un servicio y todas sus asociaciones de forma transaccional.
+     * @param int $id El ID del servicio a eliminar.
+     * @return bool
+     */
+    public function delete($id)
+    {
+        $this->db->beginTransaction();
+        try {
+            // Antes de eliminar el servicio, obtenemos su nombre para encontrar el permiso asociado.
+            $service = $this->findById($id);
+            if (!$service) {
+                $this->db->rollBack();
+                return false;
+            }
+            $serviceName = $service['name'];
+            $permissionName = 'access_' . strtolower(preg_replace('/[^a-zA-Z0-9]+/', '_', str_replace(' ', '_', iconv('UTF-8', 'ASCII//TRANSLIT', $serviceName))));
+
+            // 1. Eliminar asignaciones a usuarios en 'user_service'
+            $stmtUser = $this->db->prepare("DELETE FROM user_service WHERE service_id = :id");
+            $stmtUser->execute([':id' => $id]);
+
+            // 2. Eliminar asignaciones de permisos en 'service_permission'
+            $stmtSvcPerm = $this->db->prepare("DELETE FROM service_permission WHERE service_id = :id");
+            $stmtSvcPerm->execute([':id' => $id]);
+
+            // 3. Eliminar el permiso auto-generado de la tabla 'permissions'
+            $stmtPerm = $this->db->prepare("DELETE FROM permissions WHERE name = :name");
+            $stmtPerm->execute([':name' => $permissionName]);
+
+            // 4. Finalmente, eliminar el servicio de la tabla 'services'
+            $stmtService = $this->db->prepare("DELETE FROM services WHERE id = :id");
+            $stmtService->execute([':id' => $id]);
+
+            $this->db->commit();
+            return true;
+        } catch (\Exception $e) {
+            $this->db->rollBack();
+            error_log("Error al eliminar servicio: " . $e->getMessage());
             return false;
         }
     }

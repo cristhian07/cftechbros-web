@@ -13,47 +13,87 @@ class AdminServiceController extends BaseController
 
     public function __construct()
     {
+        Auth::check(['admin']); // Solo los administradores pueden acceder
         $this->serviceModel = new Service();
         $this->permissionModel = new Permission();
-
-        // Proteger toda la sección. Solo usuarios con el permiso 'manage_service_permissions' pueden acceder.
-        if (!Auth::can('manage_service_permissions')) {
-            $this->redirect('dashboard');
-        }
     }
 
-    /**
-     * Muestra la lista de servicios para gestionar sus permisos.
-     */
     public function index()
     {
         $services = $this->serviceModel->getAll();
-        $successMessage = Session::get('success_message');
-        Session::delete('success_message');
+        $successMessage = Session::get('success');
+        Session::delete('success');
+        $errorMessage = Session::get('error');
+        Session::delete('error');
 
         $this->view('admin/services/index', [
             'services' => $services,
-            'success' => $successMessage
+            'success' => $successMessage,
+            'error' => $errorMessage,
+            'csrf_token' => Session::generateCsrfToken()
         ]);
     }
 
-    /**
-     * Muestra el formulario para editar los permisos de un servicio.
-     */
+    public function create()
+    {
+        $all_permissions = $this->permissionModel->getAll();
+        $this->view('admin/services/create', [
+            'all_permissions' => $all_permissions,
+            'csrf_token' => Session::generateCsrfToken()
+        ]);
+    }
+
+    public function store()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redirect('admin/services');
+        }
+
+        if (!Session::verifyCsrfToken($_POST['csrf_token'])) {
+            Session::set('error', 'Error de seguridad CSRF.');
+            $this->redirect('admin/services/create');
+        }
+
+        $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
+        $description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING);
+        $icon_class = filter_input(INPUT_POST, 'icon_class', FILTER_SANITIZE_STRING);
+        $image_url = filter_input(INPUT_POST, 'image_url', FILTER_SANITIZE_URL);
+        $is_featured = isset($_POST['is_featured']) ? 1 : 0;
+        $permissions = $_POST['permissions'] ?? [];
+        
+        // Generar una ruta simple a partir del nombre
+        $route = 'services/' . strtolower(str_replace(' ', '-', $name));
+
+        if (empty($name) || empty($description) || empty($icon_class)) {
+            Session::set('error', 'Todos los campos son obligatorios.');
+            $this->redirect('admin/services/create');
+        }
+
+        if ($this->serviceModel->create($name, $description, $icon_class, $route, $image_url, $is_featured, $permissions)) {
+            Session::set('success', 'Servicio creado exitosamente.');
+            $this->redirect('admin/services');
+        } else {
+            Session::set('error', 'Hubo un error al crear el servicio.');
+            $this->redirect('admin/services/create');
+        }
+    }
+
     public function edit()
     {
-        $service_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-        if (!$service_id) {
+        $serviceId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+        if (!$serviceId) {
             $this->redirect('admin/services');
         }
 
-        $service = $this->serviceModel->findById($service_id);
+        $service = $this->serviceModel->findById($serviceId);
         if (!$service) {
+            Session::set('error', 'Servicio no encontrado.');
             $this->redirect('admin/services');
         }
 
+        $service = $this->serviceModel->findById($serviceId);
         $all_permissions = $this->permissionModel->getAll();
-        $service_permissions = $this->serviceModel->getPermissions($service_id);
+        $service_permissions = $this->serviceModel->getPermissions($serviceId);
 
         $this->view('admin/services/edit', [
             'service' => $service,
@@ -63,71 +103,64 @@ class AdminServiceController extends BaseController
         ]);
     }
 
-    /**
-     * Muestra el formulario para crear un nuevo servicio.
-     */
-    public function create()
-    {
-        $this->view('admin/services/create', [
-            'csrf_token' => Session::generateCsrfToken()
-        ]);
-    }
-
-    /**
-     * Almacena un nuevo servicio en la base de datos.
-     */
-    public function store()
-    {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $csrfToken = filter_input(INPUT_POST, 'csrf_token');
-            if (!Session::verifyCsrfToken($csrfToken)) {
-                $this->redirect('admin/services');
-                return;
-            }
-
-            $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
-            $description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING);
-            $icon_class = filter_input(INPUT_POST, 'icon_class', FILTER_SANITIZE_STRING);
-            
-            // La ruta por defecto para acceder a un servicio será 'services/view'
-            $route = 'services/view';
-
-            if (empty($name) || empty($description) || empty($icon_class)) {
-                $this->view('admin/services/create', [
-                    'errors' => ['Todos los campos son obligatorios.'],
-                    'csrf_token' => Session::generateCsrfToken()
-                ]);
-                return;
-            }
-
-            if ($this->serviceModel->create($name, $description, $icon_class, $route)) {
-                Session::set('success_message', 'Servicio "' . htmlspecialchars($name) . '" creado correctamente. Se ha generado y asignado un permiso de acceso automático.');
-            }
-        }
-        $this->redirect('admin/services');
-    }
-
-    /**
-     * Actualiza los permisos de un servicio.
-     */
     public function update()
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $csrfToken = filter_input(INPUT_POST, 'csrf_token');
-            if (!Session::verifyCsrfToken($csrfToken)) {
-                $this->redirect('admin/services');
-                return;
-            }
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redirect('admin/services');
+        }
 
-            $service_id = filter_input(INPUT_POST, 'service_id', FILTER_VALIDATE_INT);
-            $permissions = $_POST['permissions'] ?? [];
+        if (!Session::verifyCsrfToken($_POST['csrf_token'])) {
+            Session::set('error', 'Error de seguridad CSRF.');
+            $this->redirect('admin/services');
+        }
 
-            $service = $this->serviceModel->findById($service_id);
+        $service_id = filter_input(INPUT_POST, 'service_id', FILTER_VALIDATE_INT);
+        $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
+        $description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING);
+        $icon_class = filter_input(INPUT_POST, 'icon_class', FILTER_SANITIZE_STRING);
+        $image_url = filter_input(INPUT_POST, 'image_url', FILTER_SANITIZE_URL);
+        $is_featured = isset($_POST['is_featured']) ? 1 : 0;
+        $permissions = $_POST['permissions'] ?? [];
 
-            if ($service) {
-                $this->serviceModel->updatePermissions($service_id, $permissions);
-                Session::set('success_message', 'Permisos para el servicio "' . htmlspecialchars($service['name']) . '" actualizados correctamente.');
-            }
+        $route = 'services/' . strtolower(str_replace(' ', '-', $name));
+
+        if ($this->serviceModel->update($service_id, $name, $description, $icon_class, $route, $image_url, $is_featured, $permissions)) {
+            Session::set('success', 'Servicio actualizado exitosamente.');
+            $this->redirect('admin/services');
+        } else {
+            Session::set('error', 'Hubo un error al actualizar el servicio.');
+            $this->redirect('admin/services/edit?id=' . $service_id);
+        }
+    }
+
+    public function delete()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redirect('admin/services');
+        }
+
+        if (!Session::verifyCsrfToken($_POST['csrf_token'])) {
+            Session::set('error', 'Error de seguridad CSRF.');
+            $this->redirect('admin/services');
+        }
+
+        $service_id = filter_input(INPUT_POST, 'service_id', FILTER_VALIDATE_INT);
+
+        if (!$service_id) {
+            Session::set('error', 'ID de servicio inválido.');
+            $this->redirect('admin/services');
+        }
+
+        if ($this->serviceModel->isServiceInUse($service_id)) {
+            Session::set('error', 'No se puede eliminar el servicio porque está asignado a uno o más usuarios.');
+            $this->redirect('admin/services');
+            return;
+        }
+
+        if ($this->serviceModel->delete($service_id)) {
+            Session::set('success', 'Servicio eliminado exitosamente.');
+        } else {
+            Session::set('error', 'Hubo un error al eliminar el servicio.');
         }
         $this->redirect('admin/services');
     }

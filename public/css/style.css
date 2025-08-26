@@ -82,6 +82,7 @@
     background: var(--service-card-bg);
     border: 1px solid var(--service-card-border);
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15); /* Sombra suave */
+    overflow: hidden; /* Para que la imagen respete los bordes redondeados */
 }
 /* Se aplica el desenfoque solo si el navegador lo soporta para mejorar la compatibilidad */
 @supports (backdrop-filter: blur(10px)) or (-webkit-backdrop-filter: blur(10px)) {

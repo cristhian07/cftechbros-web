@@ -20,6 +20,13 @@
         </div>
     <?php endif; ?>
 
+    <?php if (!empty($error)): ?>
+        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
+            <p class="font-bold">Error</p>
+            <p><?= htmlspecialchars($error) ?></p>
+        </div>
+    <?php endif; ?>
+
     <?php if (empty($services)): ?>
         <p class="text-center text-gray-600">No hay servicios definidos en el sistema.</p>
     <?php else: ?>
@@ -41,7 +48,12 @@
                                 <span><?= htmlspecialchars($service['name']) ?></span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <a href="<?= BASE_URL ?>admin/services/edit?id=<?= $service['id'] ?>" class="text-blue-600 hover:text-blue-900 font-semibold">Editar Permisos</a>
+                                <a href="<?= BASE_URL ?>admin/services/edit?id=<?= $service['id'] ?>" class="text-blue-600 hover:text-blue-900 font-semibold mr-4">Editar</a>
+                                <form action="<?= BASE_URL ?>admin/services/delete" method="POST" class="inline-block" onsubmit="return confirm('¿Estás seguro de que quieres eliminar este servicio? Esta acción no se puede deshacer y eliminará todos los datos asociados.');">
+                                    <input type="hidden" name="csrf_token" value="<?= $csrf_token ?? '' ?>">
+                                    <input type="hidden" name="service_id" value="<?= $service['id'] ?>">
+                                    <button type="submit" class="text-red-600 hover:text-red-900 font-semibold">Eliminar</button>
+                                </form>
                             </td>
                         </tr>
                     <?php endforeach; ?>

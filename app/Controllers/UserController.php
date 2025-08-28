@@ -33,11 +33,95 @@ class UserController extends BaseController
         $users = $this->userModel->getAll();
         $successMessage = Session::get('success_message');
         Session::delete('success_message');
+        $errorMessage = Session::get('error_message');
+        Session::delete('error_message');
 
-        $this->view('admin/users/index', [
+        $this->dashboardView('admin/users/index', [
             'users' => $users,
-            'success' => $successMessage
+            'success' => $successMessage,
+            'error' => $errorMessage,
+            'csrf_token' => Session::generateCsrfToken(),
+            'title' => 'Gestionar Usuarios'
         ]);
+    }
+
+    /**
+     * Muestra el formulario para crear un nuevo usuario.
+     */
+    public function create()
+    {
+        $roles = $this->roleModel->getAll();
+
+        $this->dashboardView('admin/users/create', [
+            'roles' => $roles,
+            'csrf_token' => Session::generateCsrfToken(),
+            'title' => 'Crear Usuario'
+        ]);
+    }
+
+    /**
+     * Almacena un nuevo usuario en la base de datos.
+     */
+    public function store()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!Session::verifyCsrfToken($_POST['csrf_token'])) {
+                Session::set('error_message', 'Error de seguridad CSRF.');
+                $this->redirect('admin/users');
+                return;
+            }
+
+            $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
+            $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
+            $password = $_POST['password'];
+            $role_id = filter_input(INPUT_POST, 'role_id', FILTER_VALIDATE_INT);
+
+            // Validaciones (simplificadas, se pueden expandir)
+            if (empty($username) || !$email || empty($password) || !$role_id || strlen($password) < 6 || $this->userModel->findByUsername($username) || $this->userModel->findByEmail($email)) {
+                Session::set('error_message', 'Datos inválidos o el usuario/email ya existe. La contraseña debe tener al menos 6 caracteres.');
+                $this->redirect('admin/users/create');
+                return;
+            }
+
+            $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+
+            if ($this->userModel->create($username, $email, $hashedPassword, $role_id)) {
+                Session::set('success_message', 'Usuario "' . htmlspecialchars($username) . '" creado correctamente.');
+            } else {
+                Session::set('error_message', 'Error al crear el usuario.');
+            }
+        }
+        $this->redirect('admin/users');
+    }
+
+    /**
+     * Elimina un usuario de la base de datos.
+     */
+    public function delete()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!Session::verifyCsrfToken($_POST['csrf_token'])) {
+                Session::set('error_message', 'Error de seguridad CSRF.');
+                $this->redirect('admin/users');
+                return;
+            }
+
+            $user_id = filter_input(INPUT_POST, 'user_id', FILTER_VALIDATE_INT);
+
+            // Reglas de seguridad:
+            // 1. No se puede eliminar al super admin (ID 1).
+            // 2. Un usuario no puede eliminarse a sí mismo.
+            if ($user_id && $user_id != 1 && $user_id != Session::get('user_id')) {
+                if ($this->userModel->delete($user_id)) {
+                    Session::set('success_message', 'Usuario eliminado correctamente.');
+                } else {
+                    Session::set('error_message', 'Error al eliminar el usuario.');
+                }
+            } else {
+                Session::set('error_message', 'No tienes permiso para eliminar a este usuario.');
+            }
+        }
+        $this->redirect('admin/users');
     }
 
     /**
@@ -58,10 +142,11 @@ class UserController extends BaseController
         // Obtener todos los roles disponibles para el dropdown
         $roles = $this->roleModel->getAll();
 
-        $this->view('admin/users/edit', [
+        $this->dashboardView('admin/users/edit', [
             'user' => $user,
             'roles' => $roles,
-            'csrf_token' => Session::generateCsrfToken()
+            'csrf_token' => Session::generateCsrfToken(),
+            'title' => 'Editar Rol de Usuario'
         ]);
     }
 
@@ -121,11 +206,12 @@ class UserController extends BaseController
         // Obtener los IDs de los servicios que el usuario ya tiene
         $user_services_ids = $this->userModel->getServiceIds($user_id);
 
-        $this->view('admin/users/manage_services', [
+        $this->dashboardView('admin/users/manage_services', [
             'user' => $user,
             'all_services' => $all_services,
             'user_services_ids' => $user_services_ids,
-            'csrf_token' => Session::generateCsrfToken()
+            'csrf_token' => Session::generateCsrfToken(),
+            'title' => 'Gestionar Servicios de Usuario'
         ]);
     }
 

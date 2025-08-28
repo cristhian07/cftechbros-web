@@ -1,6 +1,9 @@
 <?php
 namespace App\Controllers;
 
+use App\Core\Auth;
+use App\Models\Contact;
+
 /**
  * Clase BaseController
  * Clase padre para todos los controladores de la aplicación.
@@ -23,6 +26,28 @@ class BaseController
         // Incluye el archivo de layout principal.
         // El contenido de la vista específica se cargará dentro del layout.
         require_once ROOT_PATH . 'app/Views/layout.php';
+    }
+
+    /**
+     * Carga una vista del panel de control (dashboard) y le pasa datos.
+     * La vista se carga dentro del layout del dashboard (dashboard_layout.php), que es para todos los usuarios logueados.
+     * @param string $path La ruta de la vista de contenido relativa a `app/Views/` (ej. 'dashboard/index' o 'admin/users').
+     * @param array $data Un array asociativo de datos a pasar a la vista.
+     */
+    protected function dashboardView($path, $data = [])
+    {
+        // Si el usuario tiene permiso para ver los contactos, obtenemos el contador de no leídos.
+        // Esto hace que la variable $unread_messages_count esté disponible en el layout del dashboard.
+        if (Auth::can('view_admin_contacts')) {
+            $contactModel = new Contact();
+            $data['unread_messages_count'] = $contactModel->getUnreadCount();
+        }
+
+        // Extrae el array $data para que sus claves se conviertan en variables
+        // accesibles directamente en la vista (ej. $data['username'] se convierte en $username)
+        extract($data);
+
+        require_once ROOT_PATH . 'app/Views/dashboard_layout.php';
     }
 
     /**

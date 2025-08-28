@@ -32,7 +32,11 @@ class AdminController extends BaseController
         $contacts = $this->contactModel->getAllContacts();
         // Pasa el token CSRF a la vista
         $csrf_token = Session::generateCsrfToken();
-        $this->view('admin/contacts', ['contacts' => $contacts, 'csrf_token' => $csrf_token]);
+        $this->dashboardView('admin/contacts', [
+            'contacts' => $contacts, 
+            'csrf_token' => $csrf_token,
+            'title' => 'Mensajes de Contacto'
+        ]);
     }
 
     /**

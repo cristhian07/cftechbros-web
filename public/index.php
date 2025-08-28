@@ -90,10 +90,13 @@ $router->post('/admin/roles/delete', 'RoleController@delete'); // Procesar la el
 
 // Rutas para la gestión de Usuarios (accesibles solo por administradores)
 $router->get('/admin/users', 'UserController@index'); // Listar usuarios
+$router->get('/admin/users/create', 'UserController@create'); // Formulario para crear usuario
+$router->post('/admin/users/store', 'UserController@store'); // Procesar la creación de usuario
 $router->get('/admin/users/edit', 'UserController@edit'); // Mostrar formulario para editar el rol de un usuario
 $router->post('/admin/users/update-role', 'UserController@updateRole'); // Procesar la actualización del rol de un usuario
 $router->get('/admin/users/manage-services', 'UserController@manageServices'); // Mostrar formulario para gestionar servicios de un usuario
 $router->post('/admin/users/update-services', 'UserController@updateServices'); // Procesar la actualización de servicios de un usuario
+$router->post('/admin/users/delete', 'UserController@delete'); // Procesar la eliminación de un usuario
 
 // Rutas para la gestión de Permisos de Servicios (accesibles solo por administradores)
 $router->get('/admin/services', 'AdminServiceController@index'); // Listar servicios para asignarles permisos

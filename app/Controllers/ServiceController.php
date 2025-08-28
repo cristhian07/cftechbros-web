@@ -26,9 +26,10 @@ class ServiceController extends BaseController
         $userId = Session::get('user_id');
         $services = $this->serviceModel->getServicesByUserId($userId);
 
-        $this->view('services/index', [
+        $this->dashboardView('services/index', [
             'services' => $services,
-            'username' => Session::get('username')
+            'username' => Session::get('username'),
+            'title' => 'Mis Servicios'
         ]);
     }
 
@@ -56,9 +57,10 @@ class ServiceController extends BaseController
         // Por ejemplo, historial de tickets, reportes, etc.
         // Por ahora, solo mostramos la información básica.
 
-        $this->view('services/view', [
+        $this->dashboardView('services/view', [
             'service' => $service,
-            'username' => Session::get('username')
+            'username' => Session::get('username'),
+            'title' => 'Detalle de ' . htmlspecialchars($service['name'])
         ]);
     }
 }

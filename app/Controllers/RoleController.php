@@ -34,11 +34,12 @@ class RoleController extends BaseController
         $errorMessage = Session::get('error_message');
         Session::delete('error_message');
 
-        $this->view('admin/roles/index', [
+        $this->dashboardView('admin/roles/index', [
             'roles' => $roles,
             'success' => $successMessage,
             'error' => $errorMessage,
-            'csrf_token' => Session::generateCsrfToken()
+            'csrf_token' => Session::generateCsrfToken(),
+            'title' => 'Gestionar Roles'
         ]);
     }
 
@@ -63,11 +64,12 @@ class RoleController extends BaseController
         // Extraer solo los IDs de los permisos que el rol ya tiene, para facilitar la comprobación en la vista.
         $role_permissions_ids = array_column($role_permissions, 'id');
 
-        $this->view('admin/roles/edit', [
+        $this->dashboardView('admin/roles/edit', [
             'role' => $role,
             'all_permissions' => $all_permissions,
             'role_permissions_ids' => $role_permissions_ids,
-            'csrf_token' => Session::generateCsrfToken()
+            'csrf_token' => Session::generateCsrfToken(),
+            'title' => 'Editar Rol'
         ]);
     }
 
@@ -76,8 +78,9 @@ class RoleController extends BaseController
      */
     public function create()
     {
-        $this->view('admin/roles/create', [
-            'csrf_token' => Session::generateCsrfToken()
+        $this->dashboardView('admin/roles/create', [
+            'csrf_token' => Session::generateCsrfToken(),
+            'title' => 'Crear Rol'
         ]);
     }
 

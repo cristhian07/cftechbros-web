@@ -105,6 +105,34 @@ class User
     }
 
     /**
+     * Elimina un usuario y sus servicios asociados de la base de datos.
+     * @param int $id
+     * @return bool
+     */
+    public function delete($id)
+    {
+        $this->db->beginTransaction();
+        try {
+            // 1. Eliminar las asignaciones de servicios del usuario
+            $stmtServices = $this->db->prepare("DELETE FROM user_service WHERE user_id = :user_id");
+            $stmtServices->bindParam(':user_id', $id, PDO::PARAM_INT);
+            $stmtServices->execute();
+
+            // 2. Eliminar al usuario
+            $stmtUser = $this->db->prepare("DELETE FROM {$this->table} WHERE id = :id");
+            $stmtUser->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmtUser->execute();
+
+            $this->db->commit();
+            return true;
+        } catch (\Exception $e) {
+            $this->db->rollBack();
+            // Opcional: registrar el error en un log
+            return false;
+        }
+    }
+
+    /**
      * Obtiene un array con los IDs de los servicios contratados por un usuario.
      * @param int $userId
      * @return array

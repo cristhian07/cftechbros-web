@@ -16,6 +16,13 @@
     <title>CFTechBros - Soluciones Tecnológicas</title>
     <!-- Tailwind CSS CDN para un estilo rápido y responsivo -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Configuración de Tailwind CSS para habilitar el modo oscuro basado en clases.
+        // Esto es necesario cuando se usa el CDN de Tailwind.
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
     <!-- Fuente Google Fonts 'Inter' para una tipografía moderna -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Iconos de Font Awesome para el botón de modo (luna/sol) -->

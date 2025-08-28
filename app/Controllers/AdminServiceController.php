@@ -26,20 +26,22 @@ class AdminServiceController extends BaseController
         $errorMessage = Session::get('error');
         Session::delete('error');
 
-        $this->view('admin/services/index', [
+        $this->dashboardView('admin/services/index', [
             'services' => $services,
             'success' => $successMessage,
             'error' => $errorMessage,
-            'csrf_token' => Session::generateCsrfToken()
+            'csrf_token' => Session::generateCsrfToken(),
+            'title' => 'Gestión de Servicios'
         ]);
     }
 
     public function create()
     {
         $all_permissions = $this->permissionModel->getAll();
-        $this->view('admin/services/create', [
+        $this->dashboardView('admin/services/create', [
             'all_permissions' => $all_permissions,
-            'csrf_token' => Session::generateCsrfToken()
+            'csrf_token' => Session::generateCsrfToken(),
+            'title' => 'Crear Servicio'
         ]);
     }
 
@@ -95,11 +97,12 @@ class AdminServiceController extends BaseController
         $all_permissions = $this->permissionModel->getAll();
         $service_permissions = $this->serviceModel->getPermissions($serviceId);
 
-        $this->view('admin/services/edit', [
+        $this->dashboardView('admin/services/edit', [
             'service' => $service,
             'all_permissions' => $all_permissions,
             'service_permissions' => $service_permissions,
-            'csrf_token' => Session::generateCsrfToken()
+            'csrf_token' => Session::generateCsrfToken(),
+            'title' => 'Editar Servicio'
         ]);
     }
 

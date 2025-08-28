@@ -104,29 +104,112 @@ use App\Core\Session;
             text-transform: uppercase;
             color: #9ca3af; /* text-gray-400 */
         }
+
+        /* --- Estilos para la barra lateral colapsable --- */
+        #sidebar.collapsed {
+            width: 5rem; /* w-20 */
+        }
+        /* Estado por defecto (expandido) */
+        #sidebar:not(.collapsed) {
+            width: 16rem; /* w-64 */
+        }
+
+        /* Ocultar texto cuando está colapsado */
+        #sidebar.collapsed .sidebar-link-text {
+            opacity: 0;
+            width: 0;
+            visibility: hidden;
+        }
+
+        /* Ocultar el separador de sección cuando la barra está colapsada */
+        #sidebar.collapsed .sidebar-separator {
+            /* Se oculta completamente para evitar espacios vacíos y texto cortado */
+            display: none;
+        }
+
+        /* --- Control de visibilidad del Logo/Título --- */
+        /* Por defecto (expandida), se muestra el título completo y se oculta el logo-icono */
+        #sidebar:not(.collapsed) .sidebar-logo-icon {
+            display: none;
+        }
+        #sidebar:not(.collapsed) .sidebar-title-full {
+            display: block;
+        }
+        /* Cuando está colapsada, se oculta el título y se muestra el logo-icono */
+        #sidebar.collapsed .sidebar-title-full {
+            display: none;
+        }
+        #sidebar.collapsed .sidebar-logo-icon {
+            display: block;
+        }
+
+        /* Centrar íconos cuando está colapsado */
+        #sidebar.collapsed .sidebar-link {
+            justify-content: center;
+        }
+        #sidebar.collapsed .sidebar-link i {
+            margin-right: 0;
+        }
+
+        /* --- Estilos para Tooltips en la barra colapsada --- */
+        .sidebar-tooltip {
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%) translateX(-10px);
+            margin-left: 1rem; /* ml-4 */
+            padding: 0.25rem 0.75rem; /* px-3 py-1 */
+            background-color: #111827; /* bg-gray-900 */
+            color: #ffffff;
+            font-size: 0.875rem; /* text-sm */
+            font-weight: 500; /* font-medium */
+            border-radius: 0.375rem; /* rounded-md */
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+            pointer-events: none; /* Para que no interfiera con el cursor */
+            z-index: 50;
+        }
+
+        /* Mostrar tooltip al hacer hover sobre el link, SOLO si la sidebar está colapsada */
+        #sidebar.collapsed .sidebar-link:hover .sidebar-tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(-50%) translateX(0);
+        }
     </style>
 </head>
 <body class="min-h-screen">
-    <div class="flex h-screen bg-gray-100 dark:bg-gray-900">
+    <div id="dashboard-container" class="flex h-screen bg-gray-100 dark:bg-gray-900">
         <!-- Sidebar -->
-        <aside class="w-64 flex-shrink-0 bg-gray-800 dark:bg-black/25 p-4 flex flex-col">
+        <aside id="sidebar" class="flex-shrink-0 bg-gray-800 dark:bg-black/25 p-4 flex flex-col transition-all duration-300 ease-in-out">
             <div class="text-center mb-8">
-                <a href="<?= BASE_URL ?>dashboard" class="text-2xl font-bold text-white">CFTechBros</a>
-                <span class="text-sm text-blue-300 block">Panel de Usuario</span>
+                <a href="<?= BASE_URL ?>dashboard">
+                    <!-- Logo para vista colapsada (asegúrate de que la ruta sea correcta) -->
+                    <img src="<?= BASE_URL ?>images/logo-icon.png" alt="Logo" class="sidebar-logo-icon h-10 w-auto mx-auto">
+                    <!-- Título para vista expandida -->
+                    <div class="sidebar-title-full">
+                        <span class="text-2xl font-bold text-white">CFTechBros</span>
+                        <span class="text-sm text-blue-300 block">Panel de Usuario</span>
+                    </div>
+                </a>
             </div>
             <nav class="flex-grow">
                 <ul class="space-y-2">
                     <li>
-                        <a href="<?= BASE_URL ?>dashboard" class="sidebar-link <?= strpos($_SERVER['REQUEST_URI'], 'dashboard') !== false ? 'active' : '' ?>">
+                        <a href="<?= BASE_URL ?>dashboard" class="sidebar-link group relative <?= strpos($_SERVER['REQUEST_URI'], 'dashboard') !== false ? 'active' : '' ?>">
                             <i class="fas fa-tachometer-alt"></i>
-                            <span>Dashboard</span>
+                            <span class="sidebar-link-text">Dashboard</span>
+                            <span class="sidebar-tooltip">Dashboard</span>
                         </a>
                     </li>
                     <?php if (!Auth::isAdmin()): // Solo mostrar "Mis Servicios" a usuarios no administradores ?>
                     <li>
-                        <a href="<?= BASE_URL ?>services" class="sidebar-link <?= (strpos($_SERVER['REQUEST_URI'], '/services') !== false && strpos($_SERVER['REQUEST_URI'], 'admin/services') === false) ? 'active' : '' ?>">
+                        <a href="<?= BASE_URL ?>services" class="sidebar-link group relative <?= (strpos($_SERVER['REQUEST_URI'], '/services') !== false && strpos($_SERVER['REQUEST_URI'], 'admin/services') === false) ? 'active' : '' ?>">
                             <i class="fas fa-briefcase"></i>
-                            <span>Mis Servicios</span>
+                            <span class="sidebar-link-text">Mis Servicios</span>
+                            <span class="sidebar-tooltip">Mis Servicios</span>
                         </a>
                     </li>
                     <?php endif; ?>
@@ -139,55 +222,66 @@ use App\Core\Session;
 
                     <?php if (Auth::can('manage_users')): ?>
                     <li>
-                        <a href="<?= BASE_URL ?>admin/users" class="sidebar-link <?= strpos($_SERVER['REQUEST_URI'], 'admin/users') !== false ? 'active' : '' ?>">
+                        <a href="<?= BASE_URL ?>admin/users" class="sidebar-link group relative <?= strpos($_SERVER['REQUEST_URI'], 'admin/users') !== false ? 'active' : '' ?>">
                             <i class="fas fa-users"></i>
-                            <span>Gestionar Usuarios</span>
+                            <span class="sidebar-link-text">Gestionar Usuarios</span>
+                            <span class="sidebar-tooltip">Gestionar Usuarios</span>
                         </a>
                     </li>
                     <?php endif; ?>
                     <?php if (Auth::can('manage_roles')): ?>
                     <li>
-                        <a href="<?= BASE_URL ?>admin/roles" class="sidebar-link <?= strpos($_SERVER['REQUEST_URI'], 'admin/roles') !== false ? 'active' : '' ?>">
+                        <a href="<?= BASE_URL ?>admin/roles" class="sidebar-link group relative <?= strpos($_SERVER['REQUEST_URI'], 'admin/roles') !== false ? 'active' : '' ?>">
                             <i class="fas fa-user-shield"></i>
-                            <span>Gestionar Roles</span>
+                            <span class="sidebar-link-text">Gestionar Roles</span>
+                            <span class="sidebar-tooltip">Gestionar Roles</span>
                         </a>
                     </li>
                     <?php endif; ?>
                     <?php if (Auth::can('manage_service_permissions')): ?>
                     <li>
-                        <a href="<?= BASE_URL ?>admin/services" class="sidebar-link <?= strpos($_SERVER['REQUEST_URI'], 'admin/services') !== false ? 'active' : '' ?>">
+                        <a href="<?= BASE_URL ?>admin/services" class="sidebar-link group relative <?= strpos($_SERVER['REQUEST_URI'], 'admin/services') !== false ? 'active' : '' ?>">
                             <i class="fas fa-cogs"></i>
-                            <span>Permisos Servicios</span>
+                            <span class="sidebar-link-text">Permisos Servicios</span>
+                            <span class="sidebar-tooltip">Permisos Servicios</span>
                         </a>
                     </li>
                     <?php endif; ?>
                     <?php if (Auth::can('view_admin_contacts')): ?>
                     <li>
-                        <a href="<?= BASE_URL ?>admin/contacts" class="sidebar-link <?= strpos($_SERVER['REQUEST_URI'], 'admin/contacts') !== false ? 'active' : '' ?>">
+                        <a href="<?= BASE_URL ?>admin/contacts" class="sidebar-link group relative <?= strpos($_SERVER['REQUEST_URI'], 'admin/contacts') !== false ? 'active' : '' ?>">
                             <i class="fas fa-envelope"></i>
-                            <span class="flex-grow">Ver Mensajes</span>
+                            <span class="flex-grow sidebar-link-text">Ver Mensajes</span>
                             <?php if (isset($unread_messages_count) && $unread_messages_count > 0): ?>
                                 <span class="bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center"><?= $unread_messages_count ?></span>
                             <?php endif; ?>
+                            <span class="sidebar-tooltip">Ver Mensajes</span>
                         </a>
                     </li>
                     <?php endif; ?>
                 </ul>
             </nav>
-            <div class="pt-4 border-t border-gray-700">
-                <a href="<?= BASE_URL ?>" class="sidebar-link">
+            <div class="pt-4 border-t border-gray-700 space-y-2">
+                <a href="<?= BASE_URL ?>" class="sidebar-link group relative">
                     <i class="fas fa-globe"></i>
-                    <span>Volver al Sitio</span>
+                    <span class="sidebar-link-text">Volver al Sitio</span>
+                    <span class="sidebar-tooltip">Volver al Sitio</span>
                 </a>
-                <a href="<?= BASE_URL ?>logout" class="sidebar-link mt-2 text-red-400 hover:bg-red-500 hover:text-white">
+                <a href="<?= BASE_URL ?>logout" class="sidebar-link group relative text-red-400 hover:bg-red-500 hover:text-white">
                     <i class="fas fa-sign-out-alt"></i>
-                    <span>Cerrar Sesión</span>
+                    <span class="sidebar-link-text">Cerrar Sesión</span>
+                    <span class="sidebar-tooltip">Cerrar Sesión</span>
                 </a>
+                <button id="sidebar-toggle" class="w-full sidebar-link group relative text-gray-300 hover:bg-gray-700">
+                    <i id="sidebar-toggle-icon" class="fas fa-chevron-left"></i>
+                    <span class="sidebar-link-text">Contraer</span>
+                    <span id="sidebar-toggle-tooltip" class="sidebar-tooltip">Contraer</span>
+                </button>
             </div>
         </aside>
 
         <!-- Main content -->
-        <div class="flex-1 flex flex-col overflow-hidden">
+        <div id="main-content" class="flex-1 flex flex-col overflow-hidden transition-all duration-300 ease-in-out">
             <!-- Header -->
             <header class="bg-white dark:bg-gray-800 shadow-md p-4 flex justify-between items-center">
                 <div class="font-semibold text-xl text-gray-800 dark:text-gray-200">
@@ -251,6 +345,40 @@ use App\Core\Session;
             applyTheme(newTheme);
             localStorage.setItem('theme', newTheme);
         });
+
+        // --- Lógica para la barra lateral colapsable ---
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebarToggleIcon = document.getElementById('sidebar-toggle-icon');
+        const sidebarToggleText = sidebarToggle.querySelector('.sidebar-link-text');
+        const sidebarToggleTooltip = document.getElementById('sidebar-toggle-tooltip');
+
+        const applySidebarState = (isCollapsed) => {
+            if (isCollapsed) {
+                sidebar.classList.add('collapsed');
+                sidebarToggleIcon.classList.remove('fa-chevron-left');
+                sidebarToggleIcon.classList.add('fa-chevron-right');
+                sidebarToggleText.textContent = 'Expandir';
+                sidebarToggleTooltip.textContent = 'Expandir';
+            } else {
+                sidebar.classList.remove('collapsed');
+                sidebarToggleIcon.classList.add('fa-chevron-left');
+                sidebarToggleIcon.classList.remove('fa-chevron-right');
+                sidebarToggleText.textContent = 'Contraer';
+                sidebarToggleTooltip.textContent = 'Contraer';
+            }
+        };
+
+        sidebarToggle.addEventListener('click', () => {
+            const isCollapsed = sidebar.classList.contains('collapsed');
+            applySidebarState(!isCollapsed);
+            localStorage.setItem('sidebar_collapsed', !isCollapsed);
+        });
+
+        // Al cargar la página, aplicar el estado guardado inmediatamente.
+        // Esto se ejecuta tan pronto como se parsea el script, eliminando el "parpadeo" al navegar.
+        const savedState = localStorage.getItem('sidebar_collapsed') === 'true';
+        applySidebarState(savedState);
     </script>
 </body>
 </html>

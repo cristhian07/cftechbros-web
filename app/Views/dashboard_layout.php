@@ -238,6 +238,15 @@ use App\Core\Session;
                         </a>
                     </li>
                     <?php endif; ?>
+                    <?php if (Auth::can('manage_permissions')): ?>
+                    <li>
+                        <a href="<?= BASE_URL ?>admin/permissions" class="sidebar-link group relative <?= strpos($_SERVER['REQUEST_URI'], 'admin/permissions') !== false ? 'active' : '' ?>">
+                            <i class="fas fa-key"></i>
+                            <span class="sidebar-link-text">Funcionalidades</span>
+                            <span class="sidebar-tooltip">Funcionalidades</span>
+                        </a>
+                    </li>
+                    <?php endif; ?>
                     <?php if (Auth::can('manage_service_permissions')): ?>
                     <li>
                         <a href="<?= BASE_URL ?>admin/services" class="sidebar-link group relative <?= strpos($_SERVER['REQUEST_URI'], 'admin/services') !== false ? 'active' : '' ?>">

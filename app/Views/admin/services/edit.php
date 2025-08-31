@@ -35,10 +35,10 @@
         <hr class="my-6 border-gray-300">
 
         <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-            <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Permisos que Otorga este Servicio</h4>
+            <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Funcionalidades que Otorga este Servicio</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <?php if (empty($all_permissions)): ?>
-                    <p class="text-gray-500 dark:text-gray-400 col-span-2">No hay permisos definidos en el sistema.</p>
+                    <p class="text-gray-500 dark:text-gray-400 col-span-2">No hay funcionalidades definidas en el sistema.</p>
                 <?php else: ?>
                     <?php foreach ($all_permissions as $permission): ?>
                         <div class="flex items-center p-3 bg-gray-50 dark:bg-gray-900/50 rounded-md">

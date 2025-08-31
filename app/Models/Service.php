@@ -87,11 +87,6 @@ class Service
      */
     public function create($name, $description, $icon_class, $route, $image_url, $is_featured, $additionalPermissionNames)
     {
-        // Generar un nombre de permiso único y seguro basado en el nombre del servicio.
-        // Ej: "Soporte Técnico" -> "access_soporte_tecnico"
-        $permissionName = 'access_' . strtolower(preg_replace('/[^a-zA-Z0-9]+/', '_', str_replace(' ', '_', iconv('UTF-8', 'ASCII//TRANSLIT', $name))));
-        $permissionDescription = "Permite el acceso al servicio: " . $name;
-
         $this->db->beginTransaction();
 
         try {
@@ -108,18 +103,7 @@ class Service
             ]);
             $serviceId = $this->db->lastInsertId();
 
-            // 2. Insertar el nuevo permiso asociado
-            $sqlPermission = "INSERT INTO permissions (name, description) VALUES (:name, :description)";
-            $stmtPermission = $this->db->prepare($sqlPermission);
-            $stmtPermission->execute([':name' => $permissionName, ':description' => $permissionDescription]);
-            $permissionId = $this->db->lastInsertId();
-
-            // 3. Vincular el servicio con su nuevo permiso en la tabla pivote
-            $sqlLink = "INSERT INTO service_permission (service_id, permission_id) VALUES (:service_id, :permission_id)";
-            $stmtLink = $this->db->prepare($sqlLink);
-            $stmtLink->execute([':service_id' => $serviceId, ':permission_id' => $permissionId]);
-
-            // 4. Vincular los permisos adicionales seleccionados
+            // Vincular los permisos adicionales seleccionados
             if (!empty($additionalPermissionNames)) {
                 $placeholders = implode(',', array_fill(0, count($additionalPermissionNames), '?'));
                 $sqlGetIds = "SELECT id FROM permissions WHERE name IN ($placeholders)";
@@ -241,15 +225,6 @@ class Service
     {
         $this->db->beginTransaction();
         try {
-            // Antes de eliminar el servicio, obtenemos su nombre para encontrar el permiso asociado.
-            $service = $this->findById($id);
-            if (!$service) {
-                $this->db->rollBack();
-                return false;
-            }
-            $serviceName = $service['name'];
-            $permissionName = 'access_' . strtolower(preg_replace('/[^a-zA-Z0-9]+/', '_', str_replace(' ', '_', iconv('UTF-8', 'ASCII//TRANSLIT', $serviceName))));
-
             // 1. Eliminar asignaciones a usuarios en 'user_service'
             $stmtUser = $this->db->prepare("DELETE FROM user_service WHERE service_id = :id");
             $stmtUser->execute([':id' => $id]);
@@ -258,11 +233,10 @@ class Service
             $stmtSvcPerm = $this->db->prepare("DELETE FROM service_permission WHERE service_id = :id");
             $stmtSvcPerm->execute([':id' => $id]);
 
-            // 3. Eliminar el permiso auto-generado de la tabla 'permissions'
-            $stmtPerm = $this->db->prepare("DELETE FROM permissions WHERE name = :name");
-            $stmtPerm->execute([':name' => $permissionName]);
+            // NOTA: Ya no se elimina el permiso asociado automáticamente.
+            // Esto debe hacerse manualmente desde la sección de gestión de permisos si se desea.
 
-            // 4. Finalmente, eliminar el servicio de la tabla 'services'
+            // 3. Finalmente, eliminar el servicio de la tabla 'services'
             $stmtService = $this->db->prepare("DELETE FROM services WHERE id = :id");
             $stmtService->execute([':id' => $id]);
 

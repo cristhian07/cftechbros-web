@@ -51,12 +51,21 @@
                     </div>
                 </a>
             <?php endif; ?>
+            <?php if (\App\Core\Auth::can('manage_permissions')): ?>
+                 <a href="<?= BASE_URL ?>admin/permissions" class="bg-purple-100 dark:bg-purple-900/50 p-4 rounded-lg flex items-center hover:bg-purple-200 dark:hover:bg-purple-800/50 transition">
+                    <i class="fas fa-key text-purple-500 text-2xl mr-4"></i>
+                    <div>
+                        <h4 class="font-semibold text-purple-800 dark:text-purple-300">Funcionalidades</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Crear y editar funcionalidades.</p>
+                    </div>
+                </a>
+            <?php endif; ?>
             <?php if (\App\Core\Auth::can('view_admin_contacts')): ?>
                  <a href="<?= BASE_URL ?>admin/contacts" class="bg-yellow-100 dark:bg-yellow-900/50 p-4 rounded-lg flex items-center hover:bg-yellow-200 dark:hover:bg-yellow-800/50 transition">
                     <i class="fas fa-envelope text-yellow-500 text-2xl mr-4"></i>
                     <div>
-                        <h4 class="font-semibold text-yellow-800 dark:text-yellow-300">Ver Mensajes</h4>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">Revisar envíos de contacto.</p>
+                        <h4 class="font-semibold text-yellow-800 dark:text-yellow-300">Mensajes de Contacto</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Revisar los envíos del formulario.</p>
                     </div>
                 </a>
             <?php endif; ?>

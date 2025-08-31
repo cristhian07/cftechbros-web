@@ -7,7 +7,7 @@
 
 // Define el directorio raíz de la aplicación
 // ROOT_PATH debe apuntar a la carpeta 'cftechbros-website/'
-define('ROOT_PATH', __DIR__ . '/../');
+define('ROOT_PATH', realpath(__DIR__ . '/../') . '/');
 
 // Define la ruta base para las URLs. ¡Importante configurar esto correctamente!
 // Si accedes como `http://localhost/cftechbros-web/public/`, entonces la base es `/cftechbros-web/public/`
@@ -87,6 +87,14 @@ $router->post('/admin/roles/store', 'RoleController@store'); // Procesar la crea
 $router->get('/admin/roles/edit', 'RoleController@edit'); // Mostrar formulario para editar un rol
 $router->post('/admin/roles/update', 'RoleController@update'); // Procesar la actualización de permisos de un rol
 $router->post('/admin/roles/delete', 'RoleController@delete'); // Procesar la eliminación de un rol
+
+// Rutas para la gestión de Permisos
+$router->get('/admin/permissions', 'AdminPermissionController@index');
+$router->get('/admin/permissions/create', 'AdminPermissionController@create');
+$router->post('/admin/permissions/store', 'AdminPermissionController@store');
+$router->get('/admin/permissions/edit', 'AdminPermissionController@edit');
+$router->post('/admin/permissions/update', 'AdminPermissionController@update');
+$router->post('/admin/permissions/delete', 'AdminPermissionController@delete');
 
 // Rutas para la gestión de Usuarios (accesibles solo por administradores)
 $router->get('/admin/users', 'UserController@index'); // Listar usuarios

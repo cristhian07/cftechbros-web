@@ -171,7 +171,7 @@ class RoleController extends BaseController
 
             if ($role && $role['name'] !== 'admin') {
                 $this->roleModel->updatePermissions($role_id, $permissions);
-                Session::set('success_message', 'Permisos para el rol "' . htmlspecialchars($role['name']) . '" actualizados correctamente.');
+                Session::set('success_message', 'Funcionalidades para el rol "' . htmlspecialchars($role['name']) . '" actualizadas correctamente.');
             }
         }
         $this->redirect('admin/roles');

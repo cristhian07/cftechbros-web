@@ -5,18 +5,18 @@
  */
 ?>
 <div class="max-w-2xl mx-auto bg-white dark:bg-gray-800 p-8 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700">
-    <h2 class="text-3xl font-bold text-blue-700 dark:text-blue-400 mb-2 text-center">Editar Permisos de Rol</h2>
-    <p class="text-center text-gray-600 dark:text-gray-300 mb-6">Asignando permisos para el rol: <strong class="text-blue-800 dark:text-blue-300 capitalize"><?= htmlspecialchars($role['name']) ?></strong></p>
+    <h2 class="text-3xl font-bold text-blue-700 dark:text-blue-400 mb-2 text-center">Editar Funcionalidades de Rol</h2>
+    <p class="text-center text-gray-600 dark:text-gray-300 mb-6">Asignando funcionalidades para el rol: <strong class="text-blue-800 dark:text-blue-300 capitalize"><?= htmlspecialchars($role['name']) ?></strong></p>
 
     <form action="<?= BASE_URL ?>admin/roles/update" method="POST" class="space-y-6">
         <input type="hidden" name="csrf_token" value="<?= $csrf_token ?? '' ?>">
         <input type="hidden" name="role_id" value="<?= $role['id'] ?>">
 
         <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-            <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Permisos Disponibles</h4>
+            <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Funcionalidades Disponibles</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <?php if (empty($all_permissions)): ?>
-                    <p class="text-gray-500 dark:text-gray-400 col-span-2">No hay permisos definidos en el sistema.</p>
+                    <p class="text-gray-500 dark:text-gray-400 col-span-2">No hay funcionalidades definidas en el sistema.</p>
                 <?php else: ?>
                     <?php foreach ($all_permissions as $permission): ?>
                         <div class="flex items-center p-3 bg-gray-50 dark:bg-gray-900/50 rounded-md">
@@ -29,14 +29,15 @@
                                    <?= $role['name'] === 'admin' ? 'disabled' : '' ?>
                             >
                             <label for="permission_<?= $permission['id'] ?>" class="ml-3 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                <?= htmlspecialchars($permission['name']) ?>
+                                <?= htmlspecialchars($permission['description']) ?>
+                                <span class="text-xs font-mono text-gray-500 dark:text-gray-400 block"><?= htmlspecialchars($permission['name']) ?></span>
                             </label>
                         </div>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </div>
             <?php if ($role['name'] === 'admin'): ?>
-                <p class="text-sm text-yellow-600 dark:text-yellow-400 mt-4">Los permisos del rol 'admin' no se pueden modificar.</p>
+                <p class="text-sm text-yellow-600 dark:text-yellow-400 mt-4">Las funcionalidades del rol 'admin' no se pueden modificar.</p>
             <?php endif; ?>
         </div>
 

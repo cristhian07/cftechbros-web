@@ -13,7 +13,11 @@ class AdminServiceController extends BaseController
 
     public function __construct()
     {
-        Auth::check(['admin']); // Solo los administradores pueden acceder
+        // Para que esta sección sea accesible, el usuario debe tener el permiso 'manage_service_permissions'.
+        if (!Auth::can('manage_service_permissions')) {
+            $this->redirect('dashboard');
+        }
+
         $this->serviceModel = new Service();
         $this->permissionModel = new Permission();
     }

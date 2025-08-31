@@ -5,7 +5,7 @@
  */
 ?>
 <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700">
-    <h2 class="text-3xl font-bold text-blue-700 dark:text-blue-400 mb-6 text-center">Gestión de Permisos por Servicio</h2>
+    <h2 class="text-3xl font-bold text-blue-700 dark:text-blue-400 mb-6 text-center">Gestión de Servicios</h2>
 
     <div class="mb-6 text-right">
         <a href="<?= BASE_URL ?>admin/services/create" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">

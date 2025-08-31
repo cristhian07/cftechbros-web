@@ -5,7 +5,7 @@
  */
 ?>
 <div class="max-w-2xl mx-auto bg-white dark:bg-gray-800 p-8 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700">
-    <h2 class="text-3xl font-bold text-blue-700 dark:text-blue-400 mb-6 text-center">Crear Nuevo Servicio</h2>
+    <h2 class="text-3xl font-bold text-blue-700 dark:text-blue-400 mb-6 text-center">Crear Servicio</h2>
 
     <?php if (isset($errors) && !empty($errors)): ?>
         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md relative mb-4" role="alert">

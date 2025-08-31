@@ -242,8 +242,8 @@ use App\Core\Session;
                     <li>
                         <a href="<?= BASE_URL ?>admin/services" class="sidebar-link group relative <?= strpos($_SERVER['REQUEST_URI'], 'admin/services') !== false ? 'active' : '' ?>">
                             <i class="fas fa-cogs"></i>
-                            <span class="sidebar-link-text">Permisos Servicios</span>
-                            <span class="sidebar-tooltip">Permisos Servicios</span>
+                            <span class="sidebar-link-text">Servicios</span>
+                            <span class="sidebar-tooltip">Servicios</span>
                         </a>
                     </li>
                     <?php endif; ?>
@@ -251,11 +251,11 @@ use App\Core\Session;
                     <li>
                         <a href="<?= BASE_URL ?>admin/contacts" class="sidebar-link group relative <?= strpos($_SERVER['REQUEST_URI'], 'admin/contacts') !== false ? 'active' : '' ?>">
                             <i class="fas fa-envelope"></i>
-                            <span class="flex-grow sidebar-link-text">Ver Mensajes</span>
+                            <span class="flex-grow sidebar-link-text">Mensajes de Contacto</span>
                             <?php if (isset($unread_messages_count) && $unread_messages_count > 0): ?>
                                 <span class="bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center"><?= $unread_messages_count ?></span>
                             <?php endif; ?>
-                            <span class="sidebar-tooltip">Ver Mensajes</span>
+                            <span class="sidebar-tooltip">Mensajes de Contacto</span>
                         </a>
                     </li>
                     <?php endif; ?>

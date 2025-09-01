@@ -3,5 +3,4 @@ deployment:
   tasks:
     - export DEPLOYPATH=/home/cftechbr/repositories/cftechbros-web/
     - /bin/cp -R * $DEPLOYPATH
-    - /bin/cp .htaccess $DEPLOYPATH
-
+    - /bin/cp public/.htaccess $DEPLOYPATH/public/

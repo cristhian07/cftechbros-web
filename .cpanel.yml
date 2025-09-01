@@ -1,6 +1,6 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/cftechbr/repositories/cftechbros-web/
-    - /bin/cp -R * $DEPLOYPATH
-    - /bin/cp public/.htaccess $DEPLOYPATH/public/
+    - export DEPLOYPATH=/home/cftechbr/public_html/
+    - /bin/cp -R /home/cftechbr/repositories/cftechbros-web/public/ .
+    - /bin/cp -R /home/cftechbr/repositories/cftechbros-web/app /home/cftechbr/repositories/cftechbros-web/vendor /home/cftechbr/repositories/cftechbros-web/bootstrap $DEPLOYPATH../

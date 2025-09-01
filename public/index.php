@@ -13,10 +13,12 @@ define('ROOT_PATH', realpath(__DIR__ . '/../') . '/');
 // Si accedes como `http://localhost/cftechbros-web/public/`, entonces la base es `/cftechbros-web/public/`
 define('BASE_URL', '/'); 
 
-// Habilitar la visualización de errores (solo para desarrollo, deshabilitar en producción)
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// --- Configuración de Errores ---
+// En un entorno de producción, es crucial desactivar la visualización de errores
+// para no exponer información sensible. Los errores se deben registrar en un archivo.
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
 
 // Autocargador de clases
 // Este cargador automático busca las clases en la estructura de carpetas `app/`

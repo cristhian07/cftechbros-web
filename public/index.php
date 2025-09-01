@@ -11,7 +11,7 @@ define('ROOT_PATH', realpath(__DIR__ . '/../') . '/');
 
 // Define la ruta base para las URLs. ¡Importante configurar esto correctamente!
 // Si accedes como `http://localhost/cftechbros-web/public/`, entonces la base es `/cftechbros-web/public/`
-define('BASE_URL', '/cftechbros-web/public/'); 
+define('BASE_URL', '/'); 
 
 // Habilitar la visualización de errores (solo para desarrollo, deshabilitar en producción)
 ini_set('display_errors', 1);

@@ -11,7 +11,7 @@
  */
 
 // Define las constantes de conexión a la base de datos
-define('DB_HOST', 'localhost'); // Host de la base de datos (generalmente 'localhost')
-define('DB_NAME', 'cftechbros_db'); // Nombre de tu base de datos
-define('DB_USER', 'root');      // Usuario de la base de datos (¡Cambiar en producción!)
-define('DB_PASS', '');          // Contraseña del usuario de la base de datos (¡Cambiar en producción!)
+define('DB_HOST', 'localhost'); // Generalmente se mantiene como 'localhost'
+define('DB_NAME', 'cftechbr_cftechbros_db'); // El nombre COMPLETO de tu BD en cPanel
+define('DB_USER', 'cftechbr_Cristhianac');      // El usuario COMPLETO de tu BD en cPanel
+define('DB_PASS', 'Alianza_97');          // La contraseña que generaste en cPanel

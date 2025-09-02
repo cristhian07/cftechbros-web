@@ -81,10 +81,11 @@
     <section class="mb-16">
         <h2 class="text-4xl font-bold text-center text-blue-700 mb-10">Nuestros Servicios Destacados</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <?php if (!empty($services)): ?>
-                <?php foreach ($services as $service): ?>
+            <?php if (!empty($services)):
+                $delay = 0; // Inicializamos el retraso
+                foreach ($services as $service): ?>
                     <!-- Tarjeta de Servicio Dinámica -->
-                    <div class="service-card rounded-2xl transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl">
+                    <div class="service-card animate-on-scroll rounded-2xl transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl" style="--scroll-anim-delay: <?= $delay ?>ms;">
                         <img src="<?= BASE_URL . htmlspecialchars($service['image_url']) ?>" alt="<?= htmlspecialchars($service['name']) ?>" class="w-full h-48 object-cover rounded-t-2xl" loading="lazy">
                         <div class="p-6 text-center">
                             <h3 class="text-2xl font-semibold text-blue-800 mb-4"><?= htmlspecialchars($service['name']) ?></h3>
@@ -93,7 +94,8 @@
                             </p>
                         </div>
                     </div>
-                <?php endforeach; ?>
+                <?php $delay += 100; // Incrementamos el retraso para la siguiente tarjeta
+                endforeach; ?>
             <?php else: ?>
                 <p class="text-center text-gray-500 col-span-full">No hay servicios destacados para mostrar en este momento.</p>
             <?php endif; ?>

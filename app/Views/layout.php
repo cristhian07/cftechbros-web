@@ -349,6 +349,28 @@
                     goToSlide(0);
                 }
             }
+
+            // --- Lógica para animar elementos al hacer scroll ---
+            const scrollElements = document.querySelectorAll('.animate-on-scroll');
+
+            if (scrollElements.length > 0) {
+                const observer = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        // Si el elemento está en el viewport
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-visible');
+                            // Dejar de observar el elemento una vez que es visible para que no se repita
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, {
+                    threshold: 0.1 // La animación se dispara cuando el 10% del elemento es visible
+                });
+
+                scrollElements.forEach(el => {
+                    observer.observe(el);
+                });
+            }
         });
     </script>
 </body>

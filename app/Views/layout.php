@@ -120,6 +120,11 @@
             background-color: var(--bg-body-mid);
             background-image: linear-gradient(135deg, var(--bg-body-start) 0%, var(--bg-body-mid) 50%, var(--bg-body-end) 100%);
         }
+
+        /* Elimina el resaltado azul/gris por defecto al tocar en navegadores móviles */
+        button, a {
+            -webkit-tap-highlight-color: transparent;
+        }
     </style>
     <!-- Enlace a tu archivo CSS personalizado (si lo usas) -->
     <link rel="stylesheet" href="<?= BASE_URL ?>css/style.css">
@@ -149,7 +154,7 @@
 
             <!-- Botón de hamburguesa para móvil -->
             <div class="md:hidden">
-                <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-white hover:text-white hover:bg-blue-700 focus:outline-none">
+                <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-white hover:text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-400">
                     <span class="sr-only">Abrir menú principal</span>
                     <i class="fas fa-bars fa-lg"></i>
                 </button>

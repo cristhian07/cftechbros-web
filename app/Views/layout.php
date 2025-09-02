@@ -125,6 +125,18 @@
         button, a {
             -webkit-tap-highlight-color: transparent;
         }
+
+        /* --- Animación para el menú móvil --- */
+        /* Por defecto, el menú está colapsado (altura máxima 0) y su contenido oculto */
+        #mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-in-out;
+        }
+        /* Cuando tiene la clase 'menu-open', se expande a una altura suficiente para mostrar su contenido */
+        #mobile-menu.menu-open {
+            max-height: 30rem; /* ~480px, un valor suficientemente grande */
+        }
     </style>
     <!-- Enlace a tu archivo CSS personalizado (si lo usas) -->
     <link rel="stylesheet" href="<?= BASE_URL ?>css/style.css">
@@ -162,7 +174,7 @@
         </div>
 
         <!-- Menú desplegable para móvil -->
-        <div class="md:hidden hidden" id="mobile-menu">
+        <div class="md:hidden" id="mobile-menu">
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                 <a href="<?= BASE_URL ?>" class="block hover:text-blue-200 transition duration-300 rounded-md px-3 py-2">Inicio</a>
                 <a href="<?= BASE_URL ?>#services" class="block hover:text-blue-200 transition duration-300 rounded-md px-3 py-2">Servicios</a>
@@ -271,7 +283,7 @@
 
             if (mobileMenuButton && mobileMenu) {
                 mobileMenuButton.addEventListener('click', () => {
-                    mobileMenu.classList.toggle('hidden');
+                    mobileMenu.classList.toggle('menu-open');
                     const icon = mobileMenuButton.querySelector('i');
                     icon.classList.toggle('fa-bars');
                     icon.classList.toggle('fa-times'); // Cambia a un ícono de 'X'

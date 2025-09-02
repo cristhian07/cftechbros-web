@@ -200,8 +200,10 @@
 
     <!-- Contenido principal (aquí se cargará la vista específica de cada página) -->
     <main class="flex-grow <?php 
-        // En la página de inicio, no se aplican los estilos de contenedor para permitir un banner de ancho completo.
-        if ($path !== 'home/index') echo 'container mx-auto p-6 my-8'; 
+        // En páginas como inicio o login, no se aplican los estilos de contenedor para permitir un diseño de ancho completo.
+        if (!in_array($path, ['home/index', 'auth/login'])) {
+            echo 'container mx-auto p-6 my-8';
+        }
     ?>">
         <?php
         // `$path` viene del controlador y especifica qué vista cargar (ej. 'home/index')

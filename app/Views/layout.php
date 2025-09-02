@@ -126,28 +126,58 @@
 </head>
 <body class="min-h-screen flex flex-col">
     <!-- Cabecera de la página -->
-    <header class="p-4 shadow-md" style="background-color: var(--bg-header); color: var(--text-inverted);">
-        <div class="container mx-auto flex justify-between items-center">
+    <header class="shadow-md sticky top-0 z-50" style="background-color: var(--bg-header); color: var(--text-inverted);">
+        <div class="container mx-auto flex justify-between items-center h-16 px-4 sm:px-6 lg:px-8">
             <!-- Logo/Nombre de la empresa -->
             <a href="<?= BASE_URL ?>" class="text-2xl font-bold rounded-md px-2 py-1 hover:bg-blue-700 transition duration-300">CFTechBros</a>
-            <!-- Menú de navegación y botón de modo -->
-            <nav class="flex items-center space-x-4">
-                <ul class="flex space-x-4">
-                    <li><a href="<?= BASE_URL ?>" class="hover:text-blue-200 transition duration-300 rounded-md px-3 py-2">Inicio</a></li>
-                    <li><a href="<?= BASE_URL ?>#services" class="hover:text-blue-200 transition duration-300 rounded-md px-3 py-2">Servicios</a></li>
-                    <?php if (\App\Core\Session::has('user_id')): // Si el usuario está logueado ?>
-                        <li><a href="<?= BASE_URL ?>dashboard" class="hover:text-blue-200 transition duration-300 rounded-md px-3 py-2">Dashboard</a></li>
-                        <li><a href="<?= BASE_URL ?>logout" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md transition duration-300">Cerrar Sesión</a></li>
-                    <?php else: // Si el usuario no está logueado ?>
-                        <li><a href="<?= BASE_URL ?>login" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-md transition duration-300">Iniciar Sesión</a></li>
-                        <!-- <li><a href="<?= BASE_URL ?>register" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition duration-300">Registrarse</a></li> -->
-                    <?php endif; ?>
-                </ul>
+            
+            <!-- Menú de navegación para escritorio -->
+            <nav class="hidden md:flex items-center space-x-4">
+                <a href="<?= BASE_URL ?>" class="hover:text-blue-200 transition duration-300 rounded-md px-3 py-2">Inicio</a>
+                <a href="<?= BASE_URL ?>#services" class="hover:text-blue-200 transition duration-300 rounded-md px-3 py-2">Servicios</a>
+                <?php if (\App\Core\Session::has('user_id')): // Si el usuario está logueado ?>
+                    <a href="<?= BASE_URL ?>dashboard" class="hover:text-blue-200 transition duration-300 rounded-md px-3 py-2">Dashboard</a>
+                    <a href="<?= BASE_URL ?>logout" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md transition duration-300">Cerrar Sesión</a>
+                <?php else: // Si el usuario no está logueado ?>
+                    <a href="<?= BASE_URL ?>login" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-md transition duration-300">Iniciar Sesión</a>
+                <?php endif; ?>
                 <!-- Botón de cambio de modo día/noche -->
                 <button id="theme-toggle" class="bg-blue-700 hover:bg-blue-600 text-white py-2 px-3 rounded-md transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <i class="fas fa-moon" id="theme-icon"></i>
                 </button>
             </nav>
+
+            <!-- Botón de hamburguesa para móvil -->
+            <div class="md:hidden">
+                <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-white hover:text-white hover:bg-blue-700 focus:outline-none">
+                    <span class="sr-only">Abrir menú principal</span>
+                    <i class="fas fa-bars fa-lg"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Menú desplegable para móvil -->
+        <div class="md:hidden hidden" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="<?= BASE_URL ?>" class="block hover:text-blue-200 transition duration-300 rounded-md px-3 py-2">Inicio</a>
+                <a href="<?= BASE_URL ?>#services" class="block hover:text-blue-200 transition duration-300 rounded-md px-3 py-2">Servicios</a>
+                <?php if (\App\Core\Session::has('user_id')): ?>
+                    <a href="<?= BASE_URL ?>dashboard" class="block hover:text-blue-200 transition duration-300 rounded-md px-3 py-2">Dashboard</a>
+                    <a href="<?= BASE_URL ?>logout" class="block bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md transition duration-300 text-center">Cerrar Sesión</a>
+                <?php else: ?>
+                    <a href="<?= BASE_URL ?>login" class="block bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-md transition duration-300 text-center">Iniciar Sesión</a>
+                <?php endif; ?>
+                
+                <!-- Botón de cambio de modo día/noche para móvil -->
+                <div class="pt-4 pb-3 border-t border-blue-700">
+                    <div class="flex items-center px-3">
+                        <button id="theme-toggle-mobile" class="bg-blue-700 hover:bg-blue-600 text-white py-2 px-3 rounded-md transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <i class="fas fa-moon" id="theme-icon-mobile"></i>
+                        </button>
+                        <span class="ml-3 text-base font-medium">Cambiar Tema</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </header>
 
@@ -176,49 +206,74 @@
     </footer>
 
     <script>
-        const themeToggle = document.getElementById('theme-toggle');
-        const themeIcon = document.getElementById('theme-icon');
+        // --- Lógica para el cambio de tema (Día/Noche) ---
+        const themeToggles = [document.getElementById('theme-toggle'), document.getElementById('theme-toggle-mobile')];
+        const themeIcons = [document.getElementById('theme-icon'), document.getElementById('theme-icon-mobile')];
         const htmlEl = document.documentElement;
 
-        // Función para aplicar el tema
+        // Función para aplicar el tema y actualizar los íconos
         function applyTheme(theme) {
             if (theme === 'dark') {
                 htmlEl.classList.add('dark');
-                themeIcon.classList.remove('fa-moon');
-                themeIcon.classList.add('fa-sun');
+                themeIcons.forEach(icon => {
+                    if (icon) {
+                        icon.classList.remove('fa-moon');
+                        icon.classList.add('fa-sun');
+                    }
+                });
             } else {
                 htmlEl.classList.remove('dark');
-                themeIcon.classList.remove('fa-sun');
-                themeIcon.classList.add('fa-moon');
+                themeIcons.forEach(icon => {
+                    if (icon) {
+                        icon.classList.remove('fa-sun');
+                        icon.classList.add('fa-moon');
+                    }
+                });
             }
         }
 
-        // Cargar el tema guardado en localStorage al cargar la página
+        // Función para cambiar el tema y guardarlo
+        function toggleTheme() {
+            const newTheme = htmlEl.classList.contains('dark') ? 'light' : 'dark';
+            applyTheme(newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Añadir event listener a ambos botones
+        themeToggles.forEach(button => {
+            if (button) {
+                button.addEventListener('click', toggleTheme);
+            }
+        });
+
+        // Cargar el tema guardado al iniciar
         const currentTheme = localStorage.getItem('theme');
         if (currentTheme) {
             applyTheme(currentTheme);
         } else {
-            // Si no hay tema guardado, usa la preferencia del sistema operativo
             if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                 applyTheme('dark');
             } else {
                 applyTheme('light');
             }
         }
-
-        // Cambiar tema al hacer clic en el botón
-        themeToggle.addEventListener('click', () => {
-            if (htmlEl.classList.contains('dark')) {
-                applyTheme('light');
-                localStorage.setItem('theme', 'light');
-            } else {
-                applyTheme('dark');
-                localStorage.setItem('theme', 'dark');
-            }
-        });
-
-        // Lógica para el banner de la página de inicio
+        
+        // --- Lógica para el menú móvil y el banner ---
         document.addEventListener('DOMContentLoaded', () => {
+            // Lógica para el menú móvil
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                    const icon = mobileMenuButton.querySelector('i');
+                    icon.classList.toggle('fa-bars');
+                    icon.classList.toggle('fa-times'); // Cambia a un ícono de 'X'
+                });
+            }
+
+            // Lógica para el banner de la página de inicio
             const bannerContainer = document.getElementById('banner-container');
             if (bannerContainer) {
                 const slider = document.getElementById('banner-slider');

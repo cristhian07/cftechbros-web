@@ -113,6 +113,28 @@
             border-color: var(--border-secondary);
         }
 
+        /* Estilos específicos para el fondo de la página de login */
+        .login-background {
+            /* Se recomienda usar una imagen local para mejor rendimiento y estabilidad */
+            background-image: url('https://images.unsplash.com/photo-1522252234503-e356532cafd5?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; /* Fija la imagen para que no se mueva con el scroll */
+        }
+        /* Superposición oscura para mejorar la legibilidad del contenido sobre la imagen */
+        .login-background::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 0;
+        }
+        /* Asegura que el contenido principal (header, main, footer) esté por encima de la superposición */
+        .login-background > * {
+            position: relative;
+            z-index: 1;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
             transition: background-color 0.3s ease, color 0.3s ease;
@@ -141,7 +163,7 @@
     <!-- Enlace a tu archivo CSS personalizado (si lo usas) -->
     <link rel="stylesheet" href="<?= BASE_URL ?>css/style.css">
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col <?php if ($path === 'auth/login') echo 'login-background'; ?>">
     <!-- Cabecera de la página -->
     <header class="shadow-md sticky top-0 z-50" style="background-color: var(--bg-header); color: var(--text-inverted);">
         <div class="container mx-auto flex justify-between items-center h-16 px-4 sm:px-6 lg:px-8">

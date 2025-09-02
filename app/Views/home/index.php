@@ -4,15 +4,15 @@
  * Vista de la página principal de presentación de CFTechBros, con un diseño moderno.
  */
 ?>
-<!-- Sección de Banner Dinámico -->
-<section id="banner-container" class="relative h-[450px] md:h-[500px] overflow-hidden group">
+<!-- Sección de Banner Dinámico (Ajustado para Móvil) -->
+<section id="banner-container" class="relative h-[500px] md:h-[500px] overflow-hidden group">
     <!-- Contenedor de las imágenes del slider. Ocupa todo el ancho. -->
     <div id="banner-slider" class="h-full w-full flex transition-transform duration-700 ease-in-out">
         <!-- Slide 1 -->
         <div class="banner-slide relative h-full w-full flex-shrink-0 bg-cover bg-center" style="background-image: url('<?= BASE_URL ?>images/banner-tech-1.jpg');">
-            <div class="absolute inset-0 bg-gradient-to-l from-black/70 to-transparent flex flex-col justify-center items-end p-8 md:p-16">
-                <div class="text-content text-white max-w-2xl text-right">
-                    <h2 class="text-4xl md:text-5xl font-extrabold mb-4" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.7);">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent md:bg-gradient-to-l flex flex-col justify-center items-center text-center md:items-end md:text-right p-6 md:p-16">
+                <div class="text-content text-white max-w-2xl">
+                    <h2 class="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.7);">
                         Innovación y Desarrollo a tu Medida
                     </h2>
                     <p class="text-lg md:text-xl mb-6" style="text-shadow: 1px 1px 3px rgba(0,0,0,0.7);">
@@ -26,9 +26,9 @@
         </div>
         <!-- Slide 2 -->
         <div class="banner-slide relative h-full w-full flex-shrink-0 bg-cover bg-center" style="background-image: url('<?= BASE_URL ?>images/banner-tech-2.jpg');">
-            <div class="absolute inset-0 bg-gradient-to-l from-black/70 to-transparent flex flex-col justify-center items-end p-8 md:p-16">
-                <div class="text-content text-white max-w-2xl text-right">
-                    <h2 class="text-4xl md:text-5xl font-extrabold mb-4" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.7);">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent md:bg-gradient-to-l flex flex-col justify-center items-center text-center md:items-end md:text-right p-6 md:p-16">
+                <div class="text-content text-white max-w-2xl">
+                    <h2 class="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.7);">
                         Optimización Cloud y DevOps
                     </h2>
                     <p class="text-lg md:text-xl mb-6" style="text-shadow: 1px 1px 3px rgba(0,0,0,0.7);">
@@ -42,9 +42,9 @@
         </div>
         <!-- Slide 3 -->
         <div class="banner-slide relative h-full w-full flex-shrink-0 bg-cover bg-center" style="background-image: url('<?= BASE_URL ?>images/banner-tech-3.jpg');">
-            <div class="absolute inset-0 bg-gradient-to-l from-black/70 to-transparent flex flex-col justify-center items-end p-8 md:p-16">
-                <div class="text-content text-white max-w-2xl text-right">
-                    <h2 class="text-4xl md:text-5xl font-extrabold mb-4" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.7);">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent md:bg-gradient-to-l flex flex-col justify-center items-center text-center md:items-end md:text-right p-6 md:p-16">
+                <div class="text-content text-white max-w-2xl">
+                    <h2 class="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.7);">
                         Seguridad Digital Integral
                     </h2>
                     <p class="text-lg md:text-xl mb-6" style="text-shadow: 1px 1px 3px rgba(0,0,0,0.7);">
